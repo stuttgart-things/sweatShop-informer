@@ -1,5 +1,7 @@
 # stuttgart-things/sweatShop-informer
 
+distributes dynamic kubernetes resource status to specific eventhandlers
+
 ## LICENSE
 
 <details><summary><b>APACHE 2.0</b></summary>
