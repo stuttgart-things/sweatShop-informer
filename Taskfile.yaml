@@ -1,15 +1,51 @@
 version: 3
 vars:
-  REPOSITORY_NAME: stuttgart-things
-  MODULE: github.com/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}
   PROJECT_NAME:
     sh: pwd | grep -o "[^/]*$"
+  REPOSITORY_NAME: stuttgart-things
+  MODULE: github.com/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}
   GIT_COMMIT:
     sh: git log -n 1 --format=%h
   DATE:
     sh: date +"%y.%m%d.%H%M"
+  GIT_COMMIT:
+    sh: git log -n 1 --format=%h
+  DATE:
+    sh: date +"%y.%m%d.%H%M"
+  UPDATED_TAG:
+    sh: old_tag=$(git describe --tags --abbrev=0 | cut -d "." -f3 | cut -d "-" -f1); new_tag=$((old_tag+1)); echo $new_tag
+  UPDATED_TAG_VERSION:
+    sh: t1=$(git describe --tags --abbrev=0 | cut -f1 -d'.'); t2=$(git describe --tags --abbrev=0 | cut -f2 -d'.'); echo $t1.$t2.{{ .UPDATED_TAG }}
+  BRANCH:
+    sh: if [ $(git rev-parse --abbrev-ref HEAD) != "main" ]; then echo -$(git rev-parse --abbrev-ref HEAD) ; fi
 
 tasks:
+
+  run:
+    desc: Run app
+    deps: [build]
+    cmds:
+      - "{{ .PROJECT_NAME }}"
+
+  lint:
+    desc: Lint code
+    cmds:
+      - cmd: golangci-lint run
+        ignore_error: true
+
+  test:
+    desc: Test code
+    cmds:
+      - go mod tidy
+      - go test ./... -v
+
+  build:
+    desc: Build the app
+    deps: [lint, test]
+    cmds:
+      - go install -ldflags="-X {{ .MODULE }}/internal.date={{ .DATE }} -X {{ .MODULE }}/internal.version={{ .UPDATED_TAG_VERSION }} -X {{ .MODULE }}/internal.commit={{ .GIT_COMMIT }}"
+      - "{{ .PROJECT_NAME }}"
+
   project-init-go:
     desc: Bootstrap project
     cmds:
