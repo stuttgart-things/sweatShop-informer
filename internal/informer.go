@@ -90,8 +90,14 @@ func InformResoureceStatus() {
 						return
 					}
 
-					fmt.Println(newObj)
 					fmt.Println("UPDATED!")
+
+					switch kind {
+					case "jobs":
+						job := CreateJobFromUnstructuredObj(newObj)
+						log.Println("job found", job.Name)
+						ProduceStatus(job.Name, "updated")
+					}
 
 				},
 				DeleteFunc: func(obj interface{}) {
