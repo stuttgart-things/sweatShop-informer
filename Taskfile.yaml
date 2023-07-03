@@ -26,6 +26,10 @@ tasks:
     deps: [build]
     cmds:
       - "{{ .PROJECT_NAME }}"
+    env:
+      KUBECONFIG: /home/sthings/.kube/dev11
+      INFORMING_KINDS: "jobs;pipelineruns"
+      INFORMING_NAMESPACES: "default;machine-shop"
 
   lint:
     desc: Lint code
