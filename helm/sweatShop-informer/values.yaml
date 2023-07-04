@@ -1,0 +1,99 @@
+# Default values for sweatshop-informer.
+namespace: sweatshop
+
+configmaps:
+  configuration:
+    INFORMING_NAMESPACE: machine-shop-packer
+    INFORMING_KINDS: jobs
+
+deployment:
+  name: sweatshop-informer
+  labels:
+    app: sweatshop-informer
+  selectorLabels:
+    app: sweatshop-informer
+  allowPrivilegeEscalation: "false"
+  privileged: "false"
+  runAsNonRoot: "false"
+  readOnlyRootFilesystem: "true"
+  serviceAccount: sweatshop-informer
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  containers:
+    sweatshop-informer:
+      image: eu.gcr.io/stuttgart-things/sweatshop-informer
+      replicaCount: 1
+      imagePullPolicy: Always
+      tag: 23.0622.1132-0.3.11
+      securityContext:
+        capabilities: {}
+
+# RBAC
+serviceAccounts:
+  sweatshop-informer:
+    labels:
+      app: sweatshop-informer
+
+roles:
+  sweatshop-informer:
+    labels:
+      app: sweatshop-informer
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - "batch"
+        resources:
+          - jobs
+        verbs:
+          - get
+          - list
+          - watch
+
+roleBindings:
+  sweatshop-informer:
+    labels:
+      app: sweatshop-informer
+    roleRef:
+      kind: Role
+      name: sweatshop-informer
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: sweatshop-informer
+        namespace: sweatshop
+
+clusterRoles:
+  list-all-namespaces:
+    labels:
+      app: sweatshop-informer
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - namespaces
+        verbs:
+          - get
+          - list
+
+clusterRoleBindings:
+  list-all-namespaces:
+    roleRef:
+      kind: ClusterRole
+      name: list-all-namespaces
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: sweatshop-informer
+        namespace: sweatshop
