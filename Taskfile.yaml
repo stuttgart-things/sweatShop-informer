@@ -78,6 +78,23 @@ tasks:
     cmds:
       - "{{ .CONTAINER_RUNTIME_CMD }} run -v ~/.kube/dev11:/root/.kube/config -e 'KUBECONFIG=/root/.kube/config' -e 'INFORMING_KINDS=jobs' -e 'INFORMING_NAMESPACE=machine-shop' {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"
 
+  package:
+    desc: Update Chart.yaml and package archive
+    cmds:
+      - cd ./helm/{{ .PROJECT_NAME }} && helm dep update
+      - git add ./helm/*/*
+      - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
+      - "sed -i 's/appVersion: .*/appVersion: {{ .UPDATED_TAG_VERSION }}/g' ./helm/*/Chart.yaml"
+      - yq e -i '.deployment.containers.{{ lower (.PROJECT_NAME) }}.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
+      - helm package ./helm/*/
+
+  push-chart:
+    desc: Push to registry
+    deps: [build-image, package]
+    cmds:
+      - helm push {{ .PROJECT_NAME }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
+      - rm -rf {{ .PROJECT_NAME }}-{{ .UPDATED_TAG_VERSION }}.tgz
+
   project-init-go:
     desc: Bootstrap project
     cmds:
