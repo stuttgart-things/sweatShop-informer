@@ -92,8 +92,8 @@ tasks:
     desc: Push to registry
     deps: [build-image, package]
     cmds:
-      - helm push {{ .PROJECT_NAME }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
-      - rm -rf {{ .PROJECT_NAME }}-{{ .UPDATED_TAG_VERSION }}.tgz
+      - helm push {{ lower (.PROJECT_NAME)}}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
+      - rm -rf {{ lower (.PROJECT_NAME)}}-{{ .UPDATED_TAG_VERSION }}.tgz
 
   project-init-go:
     desc: Bootstrap project
