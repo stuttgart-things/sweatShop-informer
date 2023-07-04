@@ -1,10 +1,29 @@
 # Default values for sweatshop-informer.
 namespace: sweatshop
 
+redis:
+  enabled: true
+  sentinel:
+    enabled: true
+  master:
+    service:
+      type: ClusterIP
+    persistence:
+      enabled: false
+      medium: ""
+  replica:
+    replicaCount: 1
+    persistence:
+      enabled: false
+      medium: ""
+
 configmaps:
   configuration:
     INFORMING_NAMESPACE: machine-shop-packer
     INFORMING_KINDS: jobs
+    REDIS_SERVER: sweatshop-informer-redis-headless.sweatshop.svc.cluster.local
+    REDIS_PORT: "6379"
+    REDIS_PASSWORD: Ce1jvZRoZH
 
 deployment:
   name: sweatshop-informer
@@ -29,7 +48,7 @@ deployment:
       image: eu.gcr.io/stuttgart-things/sweatshop-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 23.0622.1132-0.3.11
+      tag: 23.0704.1048-v0.1.7
       securityContext:
         capabilities: {}
 
@@ -75,7 +94,7 @@ roleBindings:
         namespace: sweatshop
 
 clusterRoles:
-  list-all-namespaces:
+  sweatshop-informer:
     labels:
       app: sweatshop-informer
     rules:
@@ -86,12 +105,20 @@ clusterRoles:
         verbs:
           - get
           - list
+      - apiGroups:
+          - "batch"
+        resources:
+          - jobs
+        verbs:
+          - get
+          - list
+          - watch
 
 clusterRoleBindings:
-  list-all-namespaces:
+  sweatshop-informer:
     roleRef:
       kind: ClusterRole
-      name: list-all-namespaces
+      name: sweatshop-informer
       apiGroup: rbac.authorization.k8s.io
     subjects:
       - kind: ServiceAccount
