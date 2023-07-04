@@ -17,7 +17,7 @@ var (
 	redisPassword = os.Getenv("REDIS_PASSWORD")
 )
 
-func ProduceStatus(key, value string) {
+func produceStatus(key, value string) {
 
 	ctx := context.TODO()
 	rdb := redis.NewClient(&redis.Options{
@@ -35,6 +35,6 @@ func ProduceStatus(key, value string) {
 
 	rdb.Close()
 
-	log.Println("status written to "+redisUrl, key, value)
+	log.Println("status written to "+redisUrl, key+":"+value)
 
 }

@@ -6,7 +6,6 @@ package internal
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"strings"
@@ -80,7 +79,7 @@ func InformResoureceStatus() {
 					if !synced {
 						return
 					}
-					fmt.Println("ADDED!")
+					verifyInformerStatus(kind, "added", obj)
 
 				},
 				UpdateFunc: func(oldObj, newObj interface{}) {
@@ -90,14 +89,15 @@ func InformResoureceStatus() {
 						return
 					}
 
-					fmt.Println("UPDATED!")
+					verifyInformerStatus(kind, "update", newObj)
 
-					switch kind {
-					case "jobs":
-						job := CreateJobFromUnstructuredObj(newObj)
-						log.Println("job found", job.Name)
-						ProduceStatus(job.Name, "updated")
-					}
+					// switch kind {
+					// case "jobs":
+					// 	job := CreateJobFromUnstructuredObj(newObj)
+					// 	log.Println("job found", job.Name)
+					// 	jobStatusMessage := VerifyJobCompletionStatus(fmt.Sprintln(job.Status))
+					// 	ProduceStatus(job.Name, jobStatusMessage)
+					// }
 
 				},
 				DeleteFunc: func(obj interface{}) {
@@ -106,7 +106,7 @@ func InformResoureceStatus() {
 					if !synced {
 						return
 					}
-					fmt.Println("DELETED!")
+					verifyInformerStatus(kind, "deleted", obj)
 				},
 			})
 
