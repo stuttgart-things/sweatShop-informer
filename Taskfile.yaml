@@ -76,7 +76,7 @@ tasks:
     desc: Run container
     deps: [build-image]
     cmds:
-      - "{{ .CONTAINER_RUNTIME_CMD }} run {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"
+      - "{{ .CONTAINER_RUNTIME_CMD }} run {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }} -v ~/.kube/dev11:~/.kube/config -e INFORMING_KINDS=jobs -e INFORMING_NAMESPACE=machine-shop"
 
   project-init-go:
     desc: Bootstrap project
