@@ -3,6 +3,7 @@ vars:
   PROJECT_NAME:
     sh: pwd | grep -o "[^/]*$"
   REPOSITORY_NAME: stuttgart-things
+  REGISTRY: eu.gcr.io
   MODULE: github.com/{{ .REPOSITORY_NAME }}/{{ .PROJECT_NAME }}
   GIT_COMMIT:
     sh: git log -n 1 --format=%h
