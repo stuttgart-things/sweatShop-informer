@@ -76,7 +76,7 @@ tasks:
     desc: Run container
     deps: [build-image]
     cmds:
-      - "{{ .CONTAINER_RUNTIME_CMD }} run -v ~/.kube/dev11:/root/.kube/config -e 'INFORMING_KINDS=jobs' -e 'INFORMING_NAMESPACE=machine-shop' {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"
+      - "{{ .CONTAINER_RUNTIME_CMD }} run -v ~/.kube/dev11:/root/.kube/config -e 'KUBECONFIG=/root/.kube/config' -e 'INFORMING_KINDS=jobs' -e 'INFORMING_NAMESPACE=machine-shop' {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"
 
   project-init-go:
     desc: Bootstrap project
