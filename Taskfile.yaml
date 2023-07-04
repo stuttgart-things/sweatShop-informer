@@ -81,7 +81,7 @@ tasks:
   package:
     desc: Update Chart.yaml and package archive
     cmds:
-      - cd ./helm/{{ .PROJECT_NAME }} && helm dep update
+      - cd ./helm/{{ lower (.PROJECT_NAME) }} && helm dep update
       - git add ./helm/*/*
       - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - "sed -i 's/appVersion: .*/appVersion: {{ .UPDATED_TAG_VERSION }}/g' ./helm/*/Chart.yaml"
@@ -92,8 +92,13 @@ tasks:
     desc: Push to registry
     deps: [build-image, package]
     cmds:
-      - helm push {{ lower (.PROJECT_NAME)}}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
-      - rm -rf {{ lower (.PROJECT_NAME)}}-{{ .UPDATED_TAG_VERSION }}.tgz
+      - helm push {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
+      - rm -rf {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz
+
+  update-deployment:
+    desc: Update deployment application
+    cmds:
+      - yq e -i '.spec.source.targetRevision = "{{ .UPDATED_TAG_VERSION }}"' argocd/deployment.yaml
 
   project-init-go:
     desc: Bootstrap project
