@@ -76,36 +76,33 @@ func InformResoureceStatus() {
 				AddFunc: func(obj interface{}) {
 					mux.RLock()
 					defer mux.RUnlock()
+
 					if !synced {
 						return
 					}
+
 					verifyInformerStatus(kind, "added", obj)
 
 				},
 				UpdateFunc: func(oldObj, newObj interface{}) {
 					mux.RLock()
 					defer mux.RUnlock()
+
 					if !synced {
 						return
 					}
 
 					verifyInformerStatus(kind, "update", newObj)
 
-					// switch kind {
-					// case "jobs":
-					// 	job := CreateJobFromUnstructuredObj(newObj)
-					// 	log.Println("job found", job.Name)
-					// 	jobStatusMessage := VerifyJobCompletionStatus(fmt.Sprintln(job.Status))
-					// 	ProduceStatus(job.Name, jobStatusMessage)
-					// }
-
 				},
 				DeleteFunc: func(obj interface{}) {
 					mux.RLock()
 					defer mux.RUnlock()
+
 					if !synced {
 						return
 					}
+
 					verifyInformerStatus(kind, "deleted", obj)
 				},
 			})

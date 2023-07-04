@@ -18,9 +18,9 @@ vars:
     sh: t1=$(git describe --tags --abbrev=0 | cut -f1 -d'.'); t2=$(git describe --tags --abbrev=0 | cut -f2 -d'.'); echo $t1.$t2.{{ .UPDATED_TAG }}
   BRANCH:
     sh: if [ $(git rev-parse --abbrev-ref HEAD) != "main" ]; then echo -$(git rev-parse --abbrev-ref HEAD) ; fi
+  CONTAINER_RUNTIME_CMD: sudo nerdctl
 
 tasks:
-
   run:
     desc: Run app
     deps: [build]
@@ -49,6 +49,33 @@ tasks:
     cmds:
       - go install -ldflags="-X {{ .MODULE }}/internal.date={{ .DATE }} -X {{ .MODULE }}/internal.version={{ .UPDATED_TAG_VERSION }} -X {{ .MODULE }}/internal.commit={{ .GIT_COMMIT }}"
       - "{{ .PROJECT_NAME }}"
+
+  build-image:
+    desc: Build image
+    deps: [tag]
+    cmds:
+      - "{{ .CONTAINER_RUNTIME_CMD }} build -t {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }} --build-arg VERSION={{ .UPDATED_TAG_VERSION }} --build-arg BUILD_DATE={{ .DATE }} --build-arg COMMIT={{ .GIT_COMMIT }} ."
+      - "{{ .CONTAINER_RUNTIME_CMD }} push {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"
+
+  tag:
+    desc: Commit, push & tag the module
+    deps: [lint, test]
+    cmds:
+      - rm -rf dist
+      - go mod tidy
+      - git pull && git pull --tags
+      - git add *
+      - git config advice.addIgnoredFile false
+      - git commit -am 'updated {{ .PROJECT_NAME }} {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }} '
+      - git push
+      - git tag -a {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }} -m 'updated for stuttgart-things {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}'
+      - git push origin --tags
+
+  run-container:
+    desc: Run container
+    deps: [build-image]
+    cmds:
+      - "{{ .CONTAINER_RUNTIME_CMD }} run {{ .REGISTRY }}/{{ .REPOSITORY_NAME }}/{{ lower (.PROJECT_NAME) }}:{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"
 
   project-init-go:
     desc: Bootstrap project
