@@ -39,7 +39,7 @@ spec:
                         port: 6379
                   - name: tcp-sentinel
                     protocol: TCP
-                    value: tcp-sentinel
+                    value: redis-sentinel
                     expose:
                       service:
                         type: ClusterIP
