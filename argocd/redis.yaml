@@ -24,7 +24,7 @@ spec:
               enabled: true
             master:
               service:
-                type: ClusterIP
+                type: LoadBalancer
               persistence:
                 enabled: false
                 medium: ""
