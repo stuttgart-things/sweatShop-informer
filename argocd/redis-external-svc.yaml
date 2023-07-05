@@ -1,0 +1,54 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis-sweatshop-external-svc
+  namespace: argocd
+spec:
+  project: app
+  destination:
+    name: dev11
+    namespace: sweatshop-redis
+  source:
+    repoURL: eu.gcr.io/stuttgart-things
+    chart: sthings-cluster
+    targetRevision: 0.3.8
+    plugin:
+      name: argocd-vault-plugin-helm
+      env:
+        - name: HELM_VALUES
+          value: |
+            services:
+              redis-sweatshop-deployment-headless-external:
+                namespace: sweatshop-redis
+                labels:
+                  app.kubernetes.io/instance: redis-sweatshop-deployment
+                  app.kubernetes.io/managed-by: Helm
+                  app.kubernetes.io/name: redis
+                  argocd.argoproj.io/instance: redis-sweatshop-deployment
+                  helm.sh/chart: redis-17.11.6
+                labels:
+                  app: sweatshop
+                ports:
+                  - name: tcp-redis
+                    protocol: TCP
+                    value: tcp-redis
+                    expose:
+                      service:
+                        type: LoadBalancer
+                        port: 6379
+                  - name: tcp-sentinel
+                    protocol: TCP
+                    value: tcp-sentinel
+                    expose:
+                      service:
+                        type: ClusterIP
+                        port: 26379
+                selectorLabels:
+                  app.kubernetes.io/instance: redis-sweatshop-deployment
+                  app.kubernetes.io/name: redis
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
