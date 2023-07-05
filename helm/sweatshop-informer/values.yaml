@@ -1,7 +1,8 @@
 # Default values for sweatshop-informer.
 namespace: sweatshop
+
 redis:
-  enabled: true
+  enabled: false
   sentinel:
     enabled: true
   master:
@@ -17,13 +18,15 @@ redis:
       medium: ""
   auth:
     password: just4dev
-configmaps:
-  informer:
-    INFORMING_NAMESPACE: machine-shop-packer
-    INFORMING_KINDS: jobs
-    REDIS_SERVER: sweatshop-informer-redis-headless.sweatshop.svc.cluster.local
-    REDIS_PORT: "6379"
-    REDIS_PASSWORD: just4dev
+
+# configmaps:
+#   informer:
+#     INFORMING_NAMESPACE: machine-shop-packer
+#     INFORMING_KINDS: jobs
+#     REDIS_SERVER: sweatshop-informer-redis-headless.sweatshop.svc.cluster.local
+#     REDIS_PORT: "6379"
+#     REDIS_PASSWORD: just4dev
+
 deployment:
   name: sweatshop-informer
   labels:
@@ -50,11 +53,13 @@ deployment:
       tag: 23.0704.1900-v0.1.10
       securityContext:
         capabilities: {}
+
 # RBAC
 serviceAccounts:
   sweatshop-informer:
     labels:
       app: sweatshop-informer
+
 roles:
   sweatshop-informer:
     labels:
@@ -76,6 +81,7 @@ roles:
           - get
           - list
           - watch
+
 roleBindings:
   sweatshop-informer:
     labels:
@@ -88,6 +94,7 @@ roleBindings:
       - kind: ServiceAccount
         name: sweatshop-informer
         namespace: sweatshop
+
 clusterRoles:
   sweatshop-informer:
     labels:
@@ -108,6 +115,7 @@ clusterRoles:
           - get
           - list
           - watch
+
 clusterRoleBindings:
   sweatshop-informer:
     roleRef:
