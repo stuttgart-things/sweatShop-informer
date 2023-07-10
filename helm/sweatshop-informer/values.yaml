@@ -1,6 +1,35 @@
 # Default values for sweatshop-informer.
 namespace: sweatshop
-
+tektonResources:
+  enabled: true
+tekton-resources:
+  enableRuns: true
+  runs:
+    buildHelmChart:
+      name: sws-informer-helm
+      addRandomDateToRunName: false
+      namespace: tekton-cd
+      kind: Pipeline
+      ref: package-publish-helmchart
+      params:
+        git-repo-url: git@github.com:stuttgart-things/sweatShop-informer.git
+        git-revision: main
+        gitWorkspaceSubdirectory: /helm/sws-i
+        helm-chart-name: sweatshop-informer
+        helm-chart-tag: 0.8.15
+        helm-chart-path: helm
+        registry: scr.app.4sthings.tiab.ssc.sva.de
+        working-image: "eu.gcr.io/stuttgart-things/sthings-k8s:1.127.2"
+      workspaces:
+        ssh-credentials:
+          workspaceKind: secret
+          workspaceRef: github-ssh
+        source:
+          workspaceKind: persistentVolumeClaim
+          workspaceRef: helm-workspace
+        dockerconfig:
+          workspaceKind: secret
+          workspaceRef: scr-labda-vsphere
 redis:
   enabled: false
   sentinel:
@@ -18,7 +47,6 @@ redis:
       medium: ""
   auth:
     password: just4dev
-
 # configmaps:
 #   informer:
 #     INFORMING_NAMESPACE: machine-shop-packer
@@ -26,7 +54,6 @@ redis:
 #     REDIS_SERVER: sweatshop-informer-redis-headless.sweatshop.svc.cluster.local
 #     REDIS_PORT: "6379"
 #     REDIS_PASSWORD: just4dev
-
 deployment:
   name: sweatshop-informer
   labels:
@@ -50,16 +77,14 @@ deployment:
       image: eu.gcr.io/stuttgart-things/sweatshop-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 23.0704.1900-v0.1.10
+      tag: 23.0710.1016-v0.1.11
       securityContext:
         capabilities: {}
-
 # RBAC
 serviceAccounts:
   sweatshop-informer:
     labels:
       app: sweatshop-informer
-
 roles:
   sweatshop-informer:
     labels:
@@ -81,7 +106,6 @@ roles:
           - get
           - list
           - watch
-
 roleBindings:
   sweatshop-informer:
     labels:
@@ -94,7 +118,6 @@ roleBindings:
       - kind: ServiceAccount
         name: sweatshop-informer
         namespace: sweatshop
-
 clusterRoles:
   sweatshop-informer:
     labels:
@@ -115,7 +138,6 @@ clusterRoles:
           - get
           - list
           - watch
-
 clusterRoleBindings:
   sweatshop-informer:
     roleRef:
