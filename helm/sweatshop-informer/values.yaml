@@ -1,7 +1,9 @@
 # Default values for sweatshop-informer.
 namespace: sweatshop
+
 tektonResources:
-  enabled: true
+  enabled: false
+
 tekton-resources:
   enableRuns: true
   runs:
