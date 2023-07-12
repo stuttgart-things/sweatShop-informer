@@ -8,5 +8,5 @@ dependencies:
 - name: tekton-resources
   repository: oci://eu.gcr.io/stuttgart-things
   version: v0.47.11
-digest: sha256:de336335105633cc4ba705a2f691fb8e25f055899785ed33184b35a60909c9ce
-generated: "2023-07-10T09:02:41.622739295Z"
+digest: sha256:1d7666b5e53db417a776722436526fdf3d64c55b7df7a0ebe8a06953c0707b9f
+generated: "2023-07-12T12:00:40.134899538Z"

@@ -32,6 +32,16 @@ tasks:
       INFORMING_KINDS: "jobs;pipelineruns"
       INFORMING_NAMESPACES: "default;machine-shop"
 
+  push:
+    desc: Commit & push the module
+    cmds:
+      - go mod tidy
+      - git pull
+      - git config advice.addIgnoredFile false
+      - git add *
+      - git commit -am 'updated {{ .PROJECT_NAME }} {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}'
+      - git push
+
   lint:
     desc: Lint code
     cmds:
@@ -62,13 +72,10 @@ tasks:
     desc: Commit, push & tag the module
     deps: [lint, test]
     cmds:
+      - task: push
       - rm -rf dist
       - go mod tidy
-      - git pull && git pull --tags
-      - git add *
-      - git config advice.addIgnoredFile false
-      - git commit -am 'updated {{ .PROJECT_NAME }} {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }} '
-      - git push
+      - git pull --tags
       - git tag -a {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }} -m 'updated for stuttgart-things {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}'
       - git push origin --tags
 
@@ -85,30 +92,17 @@ tasks:
       - git add ./helm/*/*
       - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - "sed -i 's/appVersion: .*/appVersion: {{ .UPDATED_TAG_VERSION }}/g' ./helm/*/Chart.yaml"
+      - yq e -i '.pipelineRuns.runs.buildHelmChart.params.helm-chart-tag = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
+      - yq e -i '.pipelineRuns.runs.buildKanikoImage.params.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"' ./helm/*/values.yaml
+      - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - yq e -i '.deployment.containers.{{ lower (.PROJECT_NAME) }}.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
       - helm package ./helm/*/
 
+
   push-chart:
     desc: Push to registry
-    deps: [build-image, package, update-deployment]
+    deps: [build-image, package]
     cmds:
       - helm push {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
       - rm -rf {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz
-
-  update-deployment:
-    desc: Update deployment application
-    cmds:
-      - yq e -i '.spec.source.targetRevision = "{{ .UPDATED_TAG_VERSION }}"' argocd/deployment.yaml
-
-  project-init-go:
-    desc: Bootstrap project
-    cmds:
-      - go mod init {{ .Module }}
-      - go mod tidy
-      - goreleaser init
-      - git add *
-      - git add .goreleaser.yaml
-      - git commit -am 'initialized go module {{ .Module }} on {{ .DATE }}'
-      - git push
-      - git tag -a v0.1.1 -m 'initialized go module {{ .Module }} on {{ .DATE }}'
-      - git push origin --tags
+      - task: push
