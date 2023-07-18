@@ -54,5 +54,8 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		log.Println("job " + function + ": " + job.Name)
 		jobStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(job.Status))
 		produceStatus(job.Name, jobStatusMessage)
+	case "configmaps":
+		fmt.Println("FOUND CONFIGMAP!")
 	}
+
 }

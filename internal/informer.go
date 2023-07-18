@@ -34,6 +34,10 @@ var (
 			"group":   "batch",
 			"version": "v1",
 		},
+		"configmaps": {
+			"group":   "",
+			"version": "v1",
+		},
 	}
 )
 
@@ -61,7 +65,6 @@ func InformResoureceStatus() {
 		log.Println("version:", apiResource[kind]["version"])
 
 		go func() {
-
 			defer wg.Done()
 
 			log.Println("namespace:", namespace)
@@ -76,7 +79,6 @@ func InformResoureceStatus() {
 				AddFunc: func(obj interface{}) {
 					mux.RLock()
 					defer mux.RUnlock()
-
 					if !synced {
 						return
 					}
@@ -125,8 +127,8 @@ func InformResoureceStatus() {
 
 		}()
 
-		wg.Wait()
-
 	}
+
+	wg.Wait()
 
 }
