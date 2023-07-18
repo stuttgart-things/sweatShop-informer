@@ -16,7 +16,7 @@ pipelineRuns:
         git-revision: main
         gitWorkspaceSubdirectory: /helm/sws-i
         helm-chart-name: sweatshop-informer
-        helm-chart-tag: v0.1.12
+        helm-chart-tag: v0.1.13
         helm-chart-path: helm
         registry: scr.app.4sthings.tiab.ssc.sva.de
         working-image: "eu.gcr.io/stuttgart-things/sthings-k8s:1.127.2"
@@ -42,7 +42,7 @@ pipelineRuns:
         context: /kaniko/sws-informer
         gitWorkspaceSubdirectory: /kaniko/sws-informer
         image: scr.app.4sthings.tiab.ssc.sva.de/sweatshop/informer
-        tag: 23.0712.1200-v0.1.12
+        tag: 23.0718.1252-v0.1.13
         registry: eu.gcr.io
         dockerfile: Dockerfile
       workspaces:
@@ -57,21 +57,21 @@ pipelineRuns:
           workspaceRef: scr-labda-vsphere
 redis:
   enabled: false
-  sentinel:
-    enabled: true
-  master:
-    service:
-      type: ClusterIP
-    persistence:
-      enabled: false
-      medium: ""
-  replica:
-    replicaCount: 1
-    persistence:
-      enabled: false
-      medium: ""
-  auth:
-    password: just4dev
+  # sentinel:
+  #   enabled: true
+  # master:
+  #   service:
+  #     type: ClusterIP
+  #   persistence:
+  #     enabled: false
+  #     medium: ""
+  # replica:
+  #   replicaCount: 1
+  #   persistence:
+  #     enabled: false
+  #     medium: ""
+  # auth:
+  #   password: just4dev
 # configmaps:
 #   informer:
 #     INFORMING_NAMESPACE: machine-shop-packer
@@ -102,7 +102,7 @@ deployment:
       image: eu.gcr.io/stuttgart-things/sweatshop-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 23.0712.1200-v0.1.12
+      tag: 23.0718.1252-v0.1.13
       securityContext:
         capabilities: {}
 # RBAC
@@ -131,6 +131,18 @@ roles:
           - get
           - list
           - watch
+      - apiGroups:
+          - ""
+        resources:
+          - configmaps
+        verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
 roleBindings:
   sweatshop-informer:
     labels:
@@ -163,6 +175,18 @@ clusterRoles:
           - get
           - list
           - watch
+      - apiGroups:
+          - ""
+        resources:
+          - configmaps
+        verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
 clusterRoleBindings:
   sweatshop-informer:
     roleRef:
