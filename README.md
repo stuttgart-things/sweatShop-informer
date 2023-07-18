@@ -26,7 +26,7 @@ export REDIS_SERVER=redis-pve.labul.sva.de
 export REDIS_PORT=6379
 task run
 ```
-
+</details>
 
 ## LICENSE
 
