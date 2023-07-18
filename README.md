@@ -2,6 +2,32 @@
 
 distributes dynamic kubernetes resource status to specific eventhandlers
 
+## DEPLOY TO CLUSTER
+
+<details><summary><b>REDIS</b></summary>
+
+</details>
+
+<details><summary><b>DEPLOYMENT</b></summary>
+
+</details>
+
+
+## TEST SERVICE LOCALLY (OUTSIDE CLUSTER)
+
+<details><summary><b>START CONSUMER</b></summary>
+
+```
+export KUBECONFIG=~/.kube/dev11
+export INFORMING_KINDS="jobs;configmaps"
+export INFORMING_NAMESPACE=machine-shop-packer
+export REDIS_PASSWORD=<SET-ME>
+export REDIS_SERVER=redis-pve.labul.sva.de
+export REDIS_PORT=6379
+task run
+```
+
+
 ## LICENSE
 
 <details><summary><b>APACHE 2.0</b></summary>
