@@ -1,6 +1,6 @@
 # stuttgart-things/sweatShop-informer
 
-distributes dynamic kubernetes resource status to specific eventhandlers
+distributes dynamic kubernetes resource status
 
 ## DEPLOY TO CLUSTER
 
