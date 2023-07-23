@@ -80,7 +80,7 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		log.Println("configMap " + function + ": " + cm.Name)
 
 		if function != "deleted" {
-			cmStatus = "finished"
+			cmStatus = "created"
 		}
 
 		produceStatus("cm-"+cm.Name, cmStatus)
