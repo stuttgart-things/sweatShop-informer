@@ -72,7 +72,8 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		job := CreateJobFromUnstructuredObj(obj)
 		log.Println("job " + function + ": " + job.Name)
 		jobStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(job.Status))
-		produceStatus(job.Name, jobStatusMessage)
+		produceStatus("job-"+job.Name, jobStatusMessage)
+
 	case "configmaps":
 		cmStatus := "notExisting"
 		cm := CreateConfigMapFromUnstructuredObj(obj)
@@ -81,7 +82,8 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		if function != "deleted" {
 			cmStatus = "finished"
 		}
-		produceStatus(cm.Name, cmStatus)
+
+		produceStatus("cm-"+cm.Name, cmStatus)
 	}
 
 }
