@@ -74,9 +74,14 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		jobStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(job.Status))
 		produceStatus(job.Name, jobStatusMessage)
 	case "configmaps":
-		fmt.Println("FOUND CM!")
+		cmStatus := "notExisting"
 		cm := CreateConfigMapFromUnstructuredObj(obj)
 		log.Println("configMap " + function + ": " + cm.Name)
+
+		if function != "deleted" {
+			cmStatus = "finished"
+		}
+		produceStatus(cm.Name, cmStatus)
 	}
 
 }
