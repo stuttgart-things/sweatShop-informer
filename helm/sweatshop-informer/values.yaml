@@ -16,7 +16,7 @@ pipelineRuns:
         git-revision: main
         gitWorkspaceSubdirectory: /helm/sws-i
         helm-chart-name: sweatshop-informer
-        helm-chart-tag: v0.1.16
+        helm-chart-tag: v0.1.17
         helm-chart-path: helm
         registry: scr.app.4sthings.tiab.ssc.sva.de
         working-image: "eu.gcr.io/stuttgart-things/sthings-k8s:1.127.2"
@@ -42,7 +42,7 @@ pipelineRuns:
         context: /kaniko/sws-informer
         gitWorkspaceSubdirectory: /kaniko/sws-informer
         image: scr.app.4sthings.tiab.ssc.sva.de/sweatshop/informer
-        tag: 23.0723.0738-v0.1.16
+        tag: 23.0723.0818-v0.1.17
         registry: eu.gcr.io
         dockerfile: Dockerfile
       workspaces:
@@ -102,7 +102,7 @@ deployment:
       image: eu.gcr.io/stuttgart-things/sweatshop-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 23.0723.0738-v0.1.16
+      tag: 23.0723.0818-v0.1.17
       securityContext:
         capabilities: {}
 # RBAC
