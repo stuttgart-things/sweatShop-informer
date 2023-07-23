@@ -9,6 +9,7 @@ import (
 
 	sthingsBase "github.com/stuttgart-things/sthingsBase"
 	batchv1 "k8s.io/api/batch/v1"
+	v1 "k8s.io/api/core/v1"
 
 	"k8s.io/apimachinery/pkg/runtime"
 )
@@ -23,6 +24,24 @@ func CreateJobFromUnstructuredObj(obj interface{}) (job *batchv1.Job) {
 	}
 
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &job)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+
+}
+
+func CreateConfigMapFromUnstructuredObj(obj interface{}) (cm *v1.ConfigMap) {
+
+	cm = new(v1.ConfigMap)
+
+	createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &cm)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,6 +75,8 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		produceStatus(job.Name, jobStatusMessage)
 	case "configmaps":
 		fmt.Println("FOUND CONFIGMAP!")
+		cm := CreateConfigMapFromUnstructuredObj(obj)
+		log.Println("configMap " + function + ": " + cm.Name)
 	}
 
 }
