@@ -60,14 +60,14 @@ func InformResoureceStatus() {
 		wg.Add(1)
 
 		kind := kinds[k]
-		log.Println("start informing for", kind)
-		log.Println("group:", apiResource[kind]["group"])
-		log.Println("version:", apiResource[kind]["version"])
+		log.Println("START INFORMING FOR", kind)
+		log.Println("GROUP:", apiResource[kind]["group"])
+		log.Println("VERSION:", apiResource[kind]["version"])
 
 		go func() {
 			defer wg.Done()
 
-			log.Println("namespace:", namespace)
+			log.Println("NAMESPACE:", namespace)
 
 			resourceDefinition := schema.GroupVersionResource{Group: apiResource[kind]["group"], Version: apiResource[kind]["version"], Resource: kind}
 			factory := dynamicinformer.NewFilteredDynamicSharedInformerFactory(clusterClient, time.Minute, namespace, nil)
