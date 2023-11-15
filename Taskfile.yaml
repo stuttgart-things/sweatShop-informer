@@ -40,14 +40,6 @@ tasks:
       - git commit -am 'updated {{ .PROJECT_NAME }} {{ .DATE }} for tag version {{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}'
       - git push
 
-  push:
-    desc: Push to registry
-    deps: [build-image, package]
-    cmds:
-      - helm push {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
-      - rm -rf {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz
-      - task: git-push
-
   lint:
     desc: Lint code
     cmds:
@@ -98,17 +90,14 @@ tasks:
       - git add ./helm/*/*
       - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - "sed -i 's/appVersion: .*/appVersion: {{ .UPDATED_TAG_VERSION }}/g' ./helm/*/Chart.yaml"
-      - yq e -i '.pipelineRuns.runs.buildHelmChart.params.helm-chart-tag = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
-      - yq e -i '.pipelineRuns.runs.buildKanikoImage.params.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}{{ .BRANCH }}"' ./helm/*/values.yaml
       - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - yq e -i '.deployment.containers.{{ lower (.PROJECT_NAME) }}.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
       - helm package ./helm/*/
 
-
-  push-chart:
+  push:
     desc: Push to registry
     deps: [build-image, package]
     cmds:
       - helm push {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
       - rm -rf {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz
-      - task: push
+      - task: git-push
