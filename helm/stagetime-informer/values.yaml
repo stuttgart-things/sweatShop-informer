@@ -1,0 +1,145 @@
+# Default values for stagetime-informer.
+namespace: stagetime
+
+redis:
+  enabled: false
+  # sentinel:
+  #   enabled: true
+  # master:
+  #   service:
+  #     type: ClusterIP
+  #   persistence:
+  #     enabled: false
+  #     medium: ""
+  # replica:
+  #   replicaCount: 1
+  #   persistence:
+  #     enabled: false
+  #     medium: ""
+  # auth:
+  #   password: just4dev
+# configmaps:
+#   informer:
+#     INFORMING_NAMESPACE: machine-shop-packer
+#     INFORMING_KINDS: jobs
+#     REDIS_SERVER: stagetime-informer-redis-headless.stagetime.svc.cluster.local
+#     REDIS_PORT: "6379"
+#     REDIS_PASSWORD: just4dev
+deployment:
+  name: stagetime-informer
+  labels:
+    app: stagetime-informer
+  selectorLabels:
+    app: stagetime-informer
+  allowPrivilegeEscalation: "false"
+  privileged: "false"
+  runAsNonRoot: "false"
+  readOnlyRootFilesystem: "true"
+  serviceAccount: stagetime-informer
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+  containers:
+    stagetime-informer:
+      image: eu.gcr.io/stuttgart-things/stagetime-informer
+      replicaCount: 1
+      imagePullPolicy: Always
+      tag: 23.0723.1541-v0.1.18
+      securityContext:
+        capabilities: {}
+# RBAC
+serviceAccounts:
+  stagetime-informer:
+    labels:
+      app: stagetime-informer
+roles:
+  stagetime-informer:
+    labels:
+      app: stagetime-informer
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - "batch"
+        resources:
+          - jobs
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - configmaps
+        verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+roleBindings:
+  stagetime-informer:
+    labels:
+      app: stagetime-informer
+    roleRef:
+      kind: Role
+      name: stagetime-informer
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: stagetime-informer
+        namespace: stagetime
+clusterRoles:
+  stagetime-informer:
+    labels:
+      app: stagetime-informer
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - namespaces
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - "batch"
+        resources:
+          - jobs
+        verbs:
+          - get
+          - list
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - configmaps
+        verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+clusterRoleBindings:
+  stagetime-informer:
+    roleRef:
+      kind: ClusterRole
+      name: stagetime-informer
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: stagetime-informer
+        namespace: stagetime

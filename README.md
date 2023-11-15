@@ -2,6 +2,23 @@
 
 distributes dynamic kubernetes resource status
 
+## DEV-TASKS
+
+```bash
+task --list: Available tasks for this project:
+* build:               Build the app
+* build-image:         Build image
+* git-push:            Commit & push the module
+* lint:                Lint code
+* package:             Update Chart.yaml and package archive
+* push:                Push to registry
+* push-chart:          Push to registry
+* run:                 Run app
+* run-container:       Run container
+* tag:                 Commit, push & tag the module
+* test:                Test code
+```
+
 ## DEPLOY TO CLUSTER
 
 <details><summary><b>REDIS</b></summary>
