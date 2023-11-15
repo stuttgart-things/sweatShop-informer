@@ -25,7 +25,7 @@ import (
 var (
 	wg             sync.WaitGroup
 	log            = sthingsBase.StdOutFileLogger(logfilePath, "2006-01-02 15:04:05", 50, 3, 28)
-	logfilePath    = "/tmp/sweatShop-informer.log"
+	logfilePath    = "/tmp/stageTime-informer.log"
 	namespace      = os.Getenv("INFORMING_NAMESPACE")
 	informingKinds = os.Getenv("INFORMING_KINDS") // jobs
 	kinds          = strings.Split(informingKinds, ";")

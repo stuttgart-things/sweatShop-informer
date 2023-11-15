@@ -1,4 +1,4 @@
-module github.com/stuttgart-things/sweatShop-informer
+module github.com/stuttgart-things/stageTime-informer
 
 go 1.20
 

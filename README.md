@@ -1,4 +1,4 @@
-# stuttgart-things/sweatShop-informer
+# stuttgart-things/stageTime-informer
 
 distributes dynamic kubernetes resource status
 

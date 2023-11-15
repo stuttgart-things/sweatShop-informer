@@ -1,5 +1,5 @@
-# Default values for sweatshop-informer.
-namespace: sweatshop
+# Default values for stageTime-informer.
+namespace: stageTime
 tektonResources:
   enabled: false
 pipelineRuns:
@@ -12,10 +12,10 @@ pipelineRuns:
       kind: Pipeline
       ref: package-publish-helmchart
       params:
-        git-repo-url: git@github.com:stuttgart-things/sweatShop-informer.git
+        git-repo-url: git@github.com:stuttgart-things/stageTime-informer.git
         git-revision: main
         gitWorkspaceSubdirectory: /helm/sws-i
-        helm-chart-name: sweatshop-informer
+        helm-chart-name: stageTime-informer
         helm-chart-tag: v0.1.18
         helm-chart-path: helm
         registry: scr.app.4sthings.tiab.ssc.sva.de
@@ -37,11 +37,11 @@ pipelineRuns:
       kind: Pipeline
       ref: build-kaniko-image
       params:
-        gitRepoUrl: git@github.com:stuttgart-things/sweatShop-informer.git
+        gitRepoUrl: git@github.com:stuttgart-things/stageTime-informer.git
         git-revision: main
         context: /kaniko/sws-informer
         gitWorkspaceSubdirectory: /kaniko/sws-informer
-        image: scr.app.4sthings.tiab.ssc.sva.de/sweatshop/informer
+        image: scr.app.4sthings.tiab.ssc.sva.de/stageTime/informer
         tag: 23.0723.1541-v0.1.18
         registry: eu.gcr.io
         dockerfile: Dockerfile
@@ -76,20 +76,20 @@ redis:
 #   informer:
 #     INFORMING_NAMESPACE: machine-shop-packer
 #     INFORMING_KINDS: jobs
-#     REDIS_SERVER: sweatshop-informer-redis-headless.sweatshop.svc.cluster.local
+#     REDIS_SERVER: stageTime-informer-redis-headless.stageTime.svc.cluster.local
 #     REDIS_PORT: "6379"
 #     REDIS_PASSWORD: just4dev
 deployment:
-  name: sweatshop-informer
+  name: stageTime-informer
   labels:
-    app: sweatshop-informer
+    app: stageTime-informer
   selectorLabels:
-    app: sweatshop-informer
+    app: stageTime-informer
   allowPrivilegeEscalation: "false"
   privileged: "false"
   runAsNonRoot: "false"
   readOnlyRootFilesystem: "true"
-  serviceAccount: sweatshop-informer
+  serviceAccount: stageTime-informer
   resources:
     requests:
       cpu: 50m
@@ -98,8 +98,8 @@ deployment:
       cpu: 100m
       memory: 128Mi
   containers:
-    sweatshop-informer:
-      image: eu.gcr.io/stuttgart-things/sweatshop-informer
+    stageTime-informer:
+      image: eu.gcr.io/stuttgart-things/stageTime-informer
       replicaCount: 1
       imagePullPolicy: Always
       tag: 23.0723.1541-v0.1.18
@@ -107,13 +107,13 @@ deployment:
         capabilities: {}
 # RBAC
 serviceAccounts:
-  sweatshop-informer:
+  stageTime-informer:
     labels:
-      app: sweatshop-informer
+      app: stageTime-informer
 roles:
-  sweatshop-informer:
+  stageTime-informer:
     labels:
-      app: sweatshop-informer
+      app: stageTime-informer
     rules:
       - apiGroups:
           - ""
@@ -144,21 +144,21 @@ roles:
           - patch
           - delete
 roleBindings:
-  sweatshop-informer:
+  stageTime-informer:
     labels:
-      app: sweatshop-informer
+      app: stageTime-informer
     roleRef:
       kind: Role
-      name: sweatshop-informer
+      name: stageTime-informer
       apiGroup: rbac.authorization.k8s.io
     subjects:
       - kind: ServiceAccount
-        name: sweatshop-informer
-        namespace: sweatshop
+        name: stageTime-informer
+        namespace: stageTime
 clusterRoles:
-  sweatshop-informer:
+  stageTime-informer:
     labels:
-      app: sweatshop-informer
+      app: stageTime-informer
     rules:
       - apiGroups:
           - ""
@@ -188,12 +188,12 @@ clusterRoles:
           - patch
           - delete
 clusterRoleBindings:
-  sweatshop-informer:
+  stageTime-informer:
     roleRef:
       kind: ClusterRole
-      name: sweatshop-informer
+      name: stageTime-informer
       apiGroup: rbac.authorization.k8s.io
     subjects:
       - kind: ServiceAccount
-        name: sweatshop-informer
-        namespace: sweatshop
+        name: stageTime-informer
+        namespace: stageTime
