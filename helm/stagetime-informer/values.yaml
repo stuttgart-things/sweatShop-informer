@@ -1,6 +1,5 @@
 # Default values for stagetime-informer.
 namespace: stagetime
-
 redis:
   enabled: false
   # sentinel:
@@ -48,7 +47,7 @@ deployment:
       image: eu.gcr.io/stuttgart-things/stagetime-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 23.0723.1541-v0.1.18
+      tag: 23.1115.1454-v0.1.22
       securityContext:
         capabilities: {}
 # RBAC
@@ -143,3 +142,11 @@ clusterRoleBindings:
       - kind: ServiceAccount
         name: stagetime-informer
         namespace: stagetime
+pipelineRuns:
+  runs:
+    buildHelmChart:
+      params:
+        helm-chart-tag: v0.1.22
+    buildKanikoImage:
+      params:
+        tag: 23.1115.1454-v0.1.22
