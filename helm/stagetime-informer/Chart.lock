@@ -2,8 +2,5 @@ dependencies:
 - name: sthings-helm-toolkit
   repository: oci://eu.gcr.io/stuttgart-things
   version: 2.4.58
-- name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 17.11.6
-digest: sha256:d294e705af5ae08a342e04a909ba1036d5c74f392aef3ccd3172a61bc17d2345
-generated: "2023-11-15T14:54:49.976481436Z"
+digest: sha256:ff929719ffc0735a859edcb78e8875fef0fab0b6b1685cb90392ba3075815ed5
+generated: "2023-12-03T06:33:07.77071929Z"

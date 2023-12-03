@@ -44,7 +44,7 @@ deployment:
       memory: 128Mi
   containers:
     stagetime-informer:
-      image: eu.gcr.io/stuttgart-things/stagetime-informer
+      image: scr.cd43.sthings-pve.labul.sva.de/stagetime-informer/stagetime-informer
       replicaCount: 1
       imagePullPolicy: Always
       tag: 23.1203.0626-v0.1.27

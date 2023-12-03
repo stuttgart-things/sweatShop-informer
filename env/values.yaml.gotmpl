@@ -1,9 +1,10 @@
 ---
 namespace: {{ .Release.Namespace }}
+
 configmaps:
   informer:
-    INFORMING_NAMESPACE=tektoncd
-    INFORMING_KINDS="pipelineruns"
+    INFORMING_NAMESPACE: tektoncd
+    INFORMING_KINDS: pipelineruns
 
 secrets:
   redis-connection:
