@@ -11,10 +11,9 @@ releases:
     installed: true
     namespace: stagetime-informer
     chart: stagetime-informer/stagetime-informer
-    version: v0.1.26
+    version: v0.1.27
     values:
       - "env/values.yaml.gotmpl"
-
 environments:
   labul-pve-dev:
     values:

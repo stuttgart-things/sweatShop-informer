@@ -47,7 +47,7 @@ deployment:
       image: eu.gcr.io/stuttgart-things/stagetime-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 23.1203.0613-v0.1.26
+      tag: 23.1203.0626-v0.1.27
       securityContext:
         capabilities: {}
 # RBAC
