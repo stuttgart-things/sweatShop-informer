@@ -142,11 +142,3 @@ clusterRoleBindings:
       - kind: ServiceAccount
         name: stagetime-informer
         namespace: stagetime
-pipelineRuns:
-  runs:
-    buildHelmChart:
-      params:
-        helm-chart-tag: v0.1.23
-    buildKanikoImage:
-      params:
-        tag: 23.1115.1459-v0.1.23

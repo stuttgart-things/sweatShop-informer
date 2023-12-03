@@ -92,7 +92,7 @@ tasks:
       - "sed -i 's/appVersion: .*/appVersion: {{ .UPDATED_TAG_VERSION }}/g' ./helm/*/Chart.yaml"
       - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - yq e -i '.deployment.containers.{{ lower (.PROJECT_NAME) }}.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
-      - yq e -i '.releases[0].version = "{{ .UPDATED_TAG_VERSION }}"' ./helmfile.yaml
+      - yq e -i '.releases[1].version = "{{ .UPDATED_TAG_VERSION }}"' ./helmfile.yaml
       - helm package ./helm/*/
 
   push:

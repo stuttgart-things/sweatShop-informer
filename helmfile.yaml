@@ -1,20 +1,32 @@
 ---
 releases:
   - name: redis-stack
-    installed: true
+    installed: false
     namespace: stagetime-informer-redis
     chart: redis/redis
-    version: v0.1.26
+    version: 17.1.4
     values:
       - "env/redis-stack.yaml.gotmpl"
+  - name: stagetime-informer
+    installed: true
+    namespace: stagetime-informer
+    chart: stagetime-informer/stagetime-informer
+    version: v0.1.26
+    values:
+      - "env/values.yaml.gotmpl"
+
 environments:
   labul-pve-dev:
     values:
       - env/defaults.yaml
       - env/{{ .Environment.Name }}.yaml
+  vcluster:
+    values:
+      - env/defaults.yaml
+      - env/{{ .Environment.Name }}.yaml
 repositories:
-  - name: stuttgart-things
-    url: eu.gcr.io/stuttgart-things
+  - name: stagetime-informer
+    url: scr.cd43.sthings-pve.labul.sva.de/stagetime-informer
     oci: true
   - name: redis
     url: https://charts.bitnami.com/bitnami

@@ -1,0 +1,40 @@
+---
+namespace: {{ .Release.Namespace }}
+configmaps:
+  informer:
+    INFORMING_NAMESPACE=tektoncd
+    INFORMING_KINDS="pipelineruns"
+
+secrets:
+  redis-connection:
+    name: redis-connection
+    labels:
+      app: stagetime-server
+    dataType: stringData
+    secretKVs:
+      REDIS_SERVER: {{ .Values.redisStack.serviceName }}.{{ .Values.redisStack.namespace }}.svc.cluster.local
+      REDIS_PORT: {{ .Values.redisStack.port }}
+      REDIS_PASSWORD: {{ .Values.redisStack.password }}
+
+clusterRoleBindings:
+  stagetime-informer:
+    subjects:
+      - kind: ServiceAccount
+        name: stagetime-informer
+        namespace: {{ .Release.Namespace }}
+  tekton-pipelines-sti:
+    roleRef:
+      kind: ClusterRole
+      name: tekton-pipelines-controller-cluster-access
+      apiGroup: rbac.authorization.k8s.io
+    subjects:
+      - kind: ServiceAccount
+        name: stagetime-informer
+        namespace: {{ .Release.Namespace }}
+
+roleBindings:
+  stagetime-informer:
+    subjects:
+      - kind: ServiceAccount
+        name: stagetime-informer
+        namespace: {{ .Release.Namespace }}
