@@ -1,6 +1,6 @@
 # stuttgart-things/stageTime-informer
 
-distributes dynamic kubernetes resource status
+informs dynamic of kubernetes resource status
 
 ## DEV-TASKS
 
@@ -12,11 +12,11 @@ task --list: Available tasks for this project:
 * lint:                Lint code
 * package:             Update Chart.yaml and package archive
 * push:                Push to registry
-* push-chart:          Push to registry
 * run:                 Run app
 * run-container:       Run container
 * tag:                 Commit, push & tag the module
 * test:                Test code
+* vcluster:            Test deploy on vcluster
 ```
 
 ## TEST SERVICE LOCALLY (OUTSIDE CLUSTER)
