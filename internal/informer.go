@@ -38,6 +38,10 @@ var (
 			"group":   "",
 			"version": "v1",
 		},
+		"pipelineruns": {
+			"group":   "tekton.dev",
+			"version": "v1",
+		},
 	}
 )
 
@@ -83,7 +87,7 @@ func InformResoureceStatus() {
 						return
 					}
 
-					verifyInformerStatus(kind, "added", obj)
+					verifyInformerStatus(kind, "ADDED", obj)
 
 				},
 				UpdateFunc: func(oldObj, newObj interface{}) {
@@ -94,7 +98,7 @@ func InformResoureceStatus() {
 						return
 					}
 
-					verifyInformerStatus(kind, "update", newObj)
+					verifyInformerStatus(kind, "UPDATE", newObj)
 
 				},
 				DeleteFunc: func(obj interface{}) {
@@ -105,7 +109,7 @@ func InformResoureceStatus() {
 						return
 					}
 
-					verifyInformerStatus(kind, "deleted", obj)
+					verifyInformerStatus(kind, "DELETED", obj)
 				},
 			})
 
@@ -120,7 +124,7 @@ func InformResoureceStatus() {
 			mux.Unlock()
 
 			if !isSynced {
-				log.Fatal("failed to sync")
+				log.Fatal("FAILED TO SYNC")
 			}
 
 			<-ctx.Done()

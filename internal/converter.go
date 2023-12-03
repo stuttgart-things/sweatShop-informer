@@ -68,6 +68,13 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 
 	switch kind {
 
+	case "pipelineruns":
+		pipelineRu := CreateJobFromUnstructuredObj(obj)
+		log.Println("pipelineRun " + function + ": " + pipelineRu.Name)
+		pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRu.Status))
+		fmt.Println(pipelineRunStatusMessage)
+		// produceStatus("job-"+pipelineRu.Name, pipelineRunStatusMessage)
+
 	case "jobs":
 		job := CreateJobFromUnstructuredObj(obj)
 		log.Println("job " + function + ": " + job.Name)

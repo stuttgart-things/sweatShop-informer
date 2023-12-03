@@ -92,6 +92,7 @@ tasks:
       - "sed -i 's/appVersion: .*/appVersion: {{ .UPDATED_TAG_VERSION }}/g' ./helm/*/Chart.yaml"
       - yq e -i '.version = "{{ .UPDATED_TAG_VERSION }}"' ./helm/*/Chart.yaml
       - yq e -i '.deployment.containers.{{ lower (.PROJECT_NAME) }}.tag = "{{ .DATE }}-{{ .UPDATED_TAG_VERSION }}"' ./helm/*/values.yaml
+      - yq e -i '.releases[0].version = "{{ .UPDATED_TAG_VERSION }}"' ./helmfile.yaml
       - helm package ./helm/*/
 
   push:
@@ -101,3 +102,13 @@ tasks:
       - helm push {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz oci://{{ .REGISTRY }}/{{ .REPOSITORY_NAME }}
       - rm -rf {{ lower (.PROJECT_NAME) }}-{{ .UPDATED_TAG_VERSION }}.tgz
       - task: git-push
+
+  vcluster:
+    desc: Test deploy on vcluster
+    cmds:
+      - vcluster disconnect || true
+      - vcluster create {{ .VCLUSTER_NAME }} --expose --set storage.className={{ .VCLUSTER_STORAGE_CLASS }} --update-current -n {{ .VCLUSTER_NAMESPACE }}
+      - vcluster connect {{ .VCLUSTER_NAME }} -n {{ .VCLUSTER_NAMESPACE }}
+      - helmfile sync --environment {{ .VCLUSTER_HELMFILE_ENV }}
+      - helmfile test --environment {{ .VCLUSTER_HELMFILE_ENV }}
+      - vcluster disconnect
