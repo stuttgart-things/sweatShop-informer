@@ -1,6 +1,6 @@
 # stuttgart-things/stageTime-informer
 
-informs dynamic of kubernetes resource status
+informs dynamic of stageTime resource status
 
 ## DEV-TASKS
 
