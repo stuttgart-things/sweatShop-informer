@@ -52,6 +52,7 @@ func CreateConfigMapFromUnstructuredObj(obj interface{}) (cm *v1.ConfigMap) {
 
 func verifyJobCompletionStatus(prStatus string) (jobStatus string) {
 
+	fmt.Println(prStatus)
 	jobStatusMessage, _ := sthingsBase.GetRegexSubMatch(prStatus, `Complete\s(\w+)`)
 
 	if jobStatusMessage != "True" {
