@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	sthingsBase "github.com/stuttgart-things/sthingsBase"
+	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	v1 "k8s.io/api/core/v1"
 
@@ -24,6 +25,24 @@ func CreateJobFromUnstructuredObj(obj interface{}) (job *batchv1.Job) {
 	}
 
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &job)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return
+
+}
+
+func CreatePipelineRunFromUnstructuredObj(obj interface{}) (pr *tekton.PipelineRun) {
+
+	pr = new(tekton.PipelineRun)
+
+	createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &pr)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,11 +89,13 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 	switch kind {
 
 	case "pipelineruns":
-		pipelineRu := CreateJobFromUnstructuredObj(obj)
-		log.Println("pipelineRun " + function + ": " + pipelineRu.Name)
-		pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRu.Status))
-		fmt.Println(pipelineRunStatusMessage)
-		// produceStatus("job-"+pipelineRu.Name, pipelineRunStatusMessage)
+		pipelineRun := CreatePipelineRunFromUnstructuredObj(obj)
+		fmt.Println(pipelineRun)
+
+		// log.Println("pipelineRun " + function + ": " + pipelineRu.Name)
+		// pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRu.Status))
+		// fmt.Println(pipelineRunStatusMessage)
+		// // produceStatus("job-"+pipelineRu.Name, pipelineRunStatusMessage)
 
 	case "jobs":
 		job := CreateJobFromUnstructuredObj(obj)
