@@ -19,7 +19,7 @@ func main() {
 
 	// PRINT BANNER + VERSION INFO
 	internal.PrintBanner()
-	log.Println("stageTime-informer started")
+	log.Println("STAGETIME-INFORMER STARTED")
 
 	internal.InformResoureceStatus()
 }

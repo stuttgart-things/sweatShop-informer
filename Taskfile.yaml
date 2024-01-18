@@ -18,6 +18,10 @@ vars:
   BRANCH:
     sh: if [ $(git rev-parse --abbrev-ref HEAD) != "main" ]; then echo -$(git rev-parse --abbrev-ref HEAD) ; fi
   CONTAINER_RUNTIME_CMD: sudo nerdctl
+  VCLUSTER_NAME: my-vcluster
+  VCLUSTER_NAMESPACE: vcluster-my-vcluster
+  VCLUSTER_STORAGE_CLASS: openebs-hostpath
+  VCLUSTER_HELMFILE_ENV: vcluster
 
 tasks:
   run:
@@ -105,6 +109,7 @@ tasks:
 
   vcluster:
     desc: Test deploy on vcluster
+    deps: [push]
     cmds:
       - vcluster disconnect || true
       - vcluster create {{ .VCLUSTER_NAME }} --expose --set storage.className={{ .VCLUSTER_STORAGE_CLASS }} --update-current -n {{ .VCLUSTER_NAMESPACE }}
