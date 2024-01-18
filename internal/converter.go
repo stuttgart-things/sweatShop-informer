@@ -9,29 +9,9 @@ import (
 
 	sthingsBase "github.com/stuttgart-things/sthingsBase"
 	tekton "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1"
-	batchv1 "k8s.io/api/batch/v1"
-	v1 "k8s.io/api/core/v1"
 
 	"k8s.io/apimachinery/pkg/runtime"
 )
-
-func CreateJobFromUnstructuredObj(obj interface{}) (job *batchv1.Job) {
-
-	job = new(batchv1.Job)
-
-	createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &job)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return
-
-}
 
 func CreatePipelineRunFromUnstructuredObj(obj interface{}) (pr *tekton.PipelineRun) {
 
@@ -43,24 +23,6 @@ func CreatePipelineRunFromUnstructuredObj(obj interface{}) (pr *tekton.PipelineR
 	}
 
 	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &pr)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return
-
-}
-
-func CreateConfigMapFromUnstructuredObj(obj interface{}) (cm *v1.ConfigMap) {
-
-	cm = new(v1.ConfigMap)
-
-	createdUnstructuredObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(obj)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = runtime.DefaultUnstructuredConverter.FromUnstructured(createdUnstructuredObj, &cm)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,22 +63,5 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		fmt.Println(pipelineRunStatusMessage)
 		produceStatus("job-"+pipelineRun.Name, pipelineRunStatusMessage)
 
-	case "jobs":
-		job := CreateJobFromUnstructuredObj(obj)
-		log.Println("job " + function + ": " + job.Name)
-		jobStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(job.Status), `Complete\s(\w+)`)
-		produceStatus("job-"+job.Name, jobStatusMessage)
-
-	case "configmaps":
-		cmStatus := "notExisting"
-		cm := CreateConfigMapFromUnstructuredObj(obj)
-		log.Println("configMap " + function + ": " + cm.Name)
-
-		if function != "deleted" {
-			cmStatus = "created"
-		}
-
-		produceStatus("cm-"+cm.Name, cmStatus)
 	}
-
 }

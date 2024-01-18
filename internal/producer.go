@@ -35,6 +35,6 @@ func produceStatus(key, value string) {
 
 	rdb.Close()
 
-	log.Println("status written to "+redisUrl, key+":"+value)
+	log.Println("STATUS WRITTEN TO: "+redisUrl, key+":"+value)
 
 }
