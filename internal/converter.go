@@ -69,10 +69,10 @@ func CreateConfigMapFromUnstructuredObj(obj interface{}) (cm *v1.ConfigMap) {
 
 }
 
-func verifyJobCompletionStatus(prStatus string) (jobStatus string) {
+func verifyJobCompletionStatus(prStatus, regexPattern string) (jobStatus string) {
 
 	fmt.Println(prStatus)
-	jobStatusMessage, _ := sthingsBase.GetRegexSubMatch(prStatus, `Complete\s(\w+)`)
+	jobStatusMessage, _ := sthingsBase.GetRegexSubMatch(prStatus, regexPattern)
 
 	if jobStatusMessage != "True" {
 		jobStatus = "running"
@@ -93,6 +93,9 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		fmt.Println(pipelineRun)
 		fmt.Println("STATUS!", pipelineRun.Status)
 
+		pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRun.Status), `Succeeded\s(\w+)`)
+		fmt.Println(pipelineRunStatusMessage)
+
 		// log.Println("pipelineRun " + function + ": " + pipelineRu.Name)
 		// pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRu.Status))
 		// fmt.Println(pipelineRunStatusMessage)
@@ -101,7 +104,7 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 	case "jobs":
 		job := CreateJobFromUnstructuredObj(obj)
 		log.Println("job " + function + ": " + job.Name)
-		jobStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(job.Status))
+		jobStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(job.Status), `Complete\s(\w+)`)
 		produceStatus("job-"+job.Name, jobStatusMessage)
 
 	case "configmaps":
