@@ -55,14 +55,18 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 	switch kind {
 
 	case "pipelineruns":
+		annotation := ":CONTINUE"
+
 		pipelineRun := CreatePipelineRunFromUnstructuredObj(obj)
 		pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRun.Status), `Succeeded\s(\w+)`)
 		pipelineRunLabels := pipelineRun.Labels
 		pipelineRunAnnotations := pipelineRun.Annotations
 
-		fmt.Println(pipelineRunStatusMessage)
-		produceStatus("pr-"+pipelineRun.Name, pipelineRunStatusMessage+"-canfail:"+pipelineRunAnnotations["canfail"])
-		checkStageStatus(pipelineRunLabels)
+		if pipelineRunAnnotations["canfail"] == "false" && pipelineRunStatusMessage == "FAILES" {
+			annotation = ":STOP"
+		}
 
+		produceStatus("pr-"+pipelineRun.Name, pipelineRunStatusMessage+annotation)
+		checkStageStatus(pipelineRunLabels)
 	}
 }
