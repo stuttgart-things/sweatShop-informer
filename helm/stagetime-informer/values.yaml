@@ -47,7 +47,7 @@ deployment:
       image: scr.cd43.sthings-pve.labul.sva.de/stagetime-informer/stagetime-informer
       replicaCount: 1
       imagePullPolicy: Always
-      tag: 24.0119.1048-v0.1.47
+      tag: 24.0119.1107-v0.1.48
       securityContext:
         capabilities: {}
 # RBAC
