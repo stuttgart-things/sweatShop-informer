@@ -11,8 +11,6 @@ import (
 	goredis "github.com/redis/go-redis/v9"
 	sthingsCli "github.com/stuttgart-things/sthingsCli"
 
-	"github.com/redis/go-redis/v9"
-
 	"context"
 )
 
@@ -25,20 +23,20 @@ var (
 func produceStatus(key, value string) {
 
 	ctx := context.TODO()
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisUrl,
-		Password: redisPassword, // no password set
-		DB:       0,             // use default DB
-	})
+	// redisClient := redis.NewClient(&redis.Options{
+	// 	Addr:     redisUrl,
+	// 	Password: redisPassword, // no password set
+	// 	DB:       0,             // use default DB
+	// })
 
-	rdb.Set(ctx, "language", "Go", 1000000)
+	redisClient.Set(ctx, "language", "Go", 1000000)
 
-	err := rdb.Set(ctx, key, value, 0).Err()
+	err := redisClient.Set(ctx, key, value, 0).Err()
 	if err != nil {
 		panic(err)
 	}
 
-	rdb.Close()
+	redisClient.Close()
 
 	log.Println("STATUS WRITTEN TO: "+redisUrl, key+": "+value)
 
@@ -47,10 +45,9 @@ func produceStatus(key, value string) {
 func checkStageStatus(pipelineRunLabels map[string]string) {
 
 	fmt.Println(pipelineRunLabels)
-	key := pipelineRunLabels["stagetime/date"] + "-" + pipelineRunLabels["stagetime/commit"] + "-" + pipelineRunLabels["stagetime/stage"]
-	fmt.Println(key)
+	stageKey := pipelineRunLabels["stagetime/date"] + "-" + pipelineRunLabels["stagetime/commit"] + "-" + pipelineRunLabels["stagetime/stage"]
 
-	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, key)
+	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageKey)
 
 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
 
