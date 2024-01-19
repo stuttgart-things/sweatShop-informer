@@ -46,6 +46,10 @@ func produceStatus(key, value string) {
 
 func checkStageStatus(pipelineRunLabels map[string]string) {
 
+	fmt.Println(pipelineRunLabels)
+	key := pipelineRunLabels["stagetime/date"] + pipelineRunLabels["stagetime/commit"] + "-" + pipelineRunLabels["stagetime/stage"]
+	fmt.Println(key)
+
 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, pipelineRunLabels["stagetime/date"]+pipelineRunLabels["stagetime/commit"]+"-"+pipelineRunLabels["stagetime/stage"])
 
 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
