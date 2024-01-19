@@ -61,7 +61,7 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		pipelineRunAnnotations := pipelineRun.Annotations
 
 		fmt.Println(pipelineRunStatusMessage)
-		produceStatus("pr-"+pipelineRun.Name, pipelineRunStatusMessage+"-fail:"+pipelineRunAnnotations["canfail"])
+		produceStatus("pr-"+pipelineRun.Name, pipelineRunStatusMessage+"-canfail:"+pipelineRunAnnotations["canfail"])
 		checkStageStatus(pipelineRunLabels)
 
 	}

@@ -23,20 +23,20 @@ var (
 func produceStatus(key, value string) {
 
 	ctx := context.TODO()
-	// redisClient := redis.NewClient(&redis.Options{
-	// 	Addr:     redisUrl,
-	// 	Password: redisPassword, // no password set
-	// 	DB:       0,             // use default DB
-	// })
+	rc := goredis.NewClient(&goredis.Options{
+		Addr:     redisUrl,
+		Password: redisPassword, // no password set
+		DB:       0,             // use default DB
+	})
 
-	redisClient.Set(ctx, "language", "Go", 1000000)
+	rc.Set(ctx, "language", "Go", 1000000)
 
-	err := redisClient.Set(ctx, key, value, 0).Err()
+	err := rc.Set(ctx, key, value, 0).Err()
 	if err != nil {
 		panic(err)
 	}
 
-	redisClient.Close()
+	rc.Close()
 
 	log.Println("STATUS WRITTEN TO: "+redisUrl, key+": "+value)
 
