@@ -59,6 +59,6 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		pipelineRunStatusMessage := verifyJobCompletionStatus(fmt.Sprintln(pipelineRun.Status), `Succeeded\s(\w+)`)
 		fmt.Println(pipelineRunStatusMessage)
 		produceStatus("job-"+pipelineRun.Name, pipelineRunStatusMessage)
-
+		checkStageStatus(pipelineRun.Labels)
 	}
 }
