@@ -8,9 +8,10 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/nitishm/go-rejson/v4 v4.1.1-0.20230331060235-d2aa875760e4
 	github.com/redis/go-redis/v9 v9.0.5
-	github.com/stuttgart-things/sthingsBase v0.1.23
+	github.com/stuttgart-things/stageTime-server v0.4.27
+	github.com/stuttgart-things/sthingsBase v0.1.30
 	github.com/stuttgart-things/sthingsCli v0.1.82
-	github.com/stuttgart-things/sthingsK8s v0.1.5
+	github.com/stuttgart-things/sthingsK8s v0.1.19
 	github.com/tektoncd/pipeline v0.55.0
 	go.hein.dev/go-version v0.1.0
 	k8s.io/apimachinery v0.29.1
@@ -48,6 +49,7 @@ require (
 	github.com/evanphx/json-patch/v5 v5.6.0 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/git-chglog/git-chglog v0.15.4 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
 	github.com/go-git/go-billy/v5 v5.5.0 // indirect

@@ -5,10 +5,12 @@ Copyright © 2023 PATRICK HERMANN patrick.hermann@sva.de
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/nitishm/go-rejson/v4"
+	server "github.com/stuttgart-things/stageTime-server/server"
 
 	goredis "github.com/redis/go-redis/v9"
 	sthingsCli "github.com/stuttgart-things/sthingsCli"
@@ -59,6 +61,17 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 
 	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
 	fmt.Println(stageStatus)
+
+	stageStatusFromRedis := server.StageStatus{}
+	err := json.Unmarshal(stageStatus, &stageStatusFromRedis)
+	if err != nil {
+		log.Fatalf("Failed to JSON Unmarshal")
+	}
+
+	stageStatusFromRedis.Status = "TESTED"
+
+	server.PrintTable(stageStatusFromRedis)
+
 	// IF STOP FOUND MARK REVISIONRUN AS FAILED
 	// IF ALL CONTINUE MARK STAGE AS SUCCESSFULL
 
