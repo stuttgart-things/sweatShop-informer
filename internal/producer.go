@@ -50,6 +50,12 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageKey)
 
 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
+	// sthingsCli.AddValueToRedisSet(redisClient, prInformation["stagetime/date"]+"-"+prInformation["stagetime/commit"]+"-"+prInformation["stagetime/stage"], prInformation["name"])
+
+	set := sthingsCli.GetValuesFromRedisSet(redisClient, pipelineRunLabels["name"])
+	fmt.Println(set)
+	// IF STOP FOUND MARK REVISIONRUN AS FAILED
+	// IF ALL CONTINUE MARK STAGE AS SUCCESSFULL
 
 }
 
