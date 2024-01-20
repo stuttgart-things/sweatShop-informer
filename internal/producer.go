@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/nitishm/go-rejson/v4"
+
 	goredis "github.com/redis/go-redis/v9"
 	sthingsCli "github.com/stuttgart-things/sthingsCli"
 
@@ -15,9 +17,10 @@ import (
 )
 
 var (
-	redisUrl      = os.Getenv("REDIS_SERVER") + ":" + os.Getenv("REDIS_PORT")
-	redisPassword = os.Getenv("REDIS_PASSWORD")
-	redisClient   = goredis.NewClient(&goredis.Options{Addr: redisUrl, Password: redisPassword, DB: 0})
+	redisUrl         = os.Getenv("REDIS_SERVER") + ":" + os.Getenv("REDIS_PORT")
+	redisPassword    = os.Getenv("REDIS_PASSWORD")
+	redisClient      = goredis.NewClient(&goredis.Options{Addr: redisUrl, Password: redisPassword, DB: 0})
+	redisJSONHandler = rejson.NewReJSONHandler()
 )
 
 func produceStatus(key, value string) {
@@ -44,6 +47,8 @@ func produceStatus(key, value string) {
 
 func checkStageStatus(pipelineRunLabels map[string]string) {
 
+	redisJSONHandler.SetGoRedisClient(redisClient)
+
 	fmt.Println(pipelineRunLabels)
 	stageKey := pipelineRunLabels["stagetime/date"] + "-" + pipelineRunLabels["stagetime/commit"] + "-" + pipelineRunLabels["stagetime/stage"]
 
@@ -52,8 +57,8 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
 	// sthingsCli.AddValueToRedisSet(redisClient, prInformation["stagetime/date"]+"-"+prInformation["stagetime/commit"]+"-"+prInformation["stagetime/stage"], prInformation["name"])
 
-	set := sthingsCli.GetValuesFromRedisSet(redisClient, pipelineRunLabels["name"])
-	fmt.Println(set)
+	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
+	fmt.Println(stageStatus)
 	// IF STOP FOUND MARK REVISIONRUN AS FAILED
 	// IF ALL CONTINUE MARK STAGE AS SUCCESSFULL
 

@@ -6,6 +6,7 @@ toolchain go1.21.1
 
 require (
 	github.com/fatih/color v1.15.0
+	github.com/nitishm/go-rejson/v4 v4.1.1-0.20230331060235-d2aa875760e4
 	github.com/redis/go-redis/v9 v9.0.5
 	github.com/stuttgart-things/sthingsBase v0.1.23
 	github.com/stuttgart-things/sthingsCli v0.1.82
@@ -105,7 +106,6 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/nitishm/go-rejson/v4 v4.1.1-0.20230331060235-d2aa875760e4 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
