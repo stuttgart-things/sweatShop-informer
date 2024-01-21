@@ -37,7 +37,7 @@ func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 	// 	log.Fatalf("FAILED TO JSON UNMARSHAL")
 	// }
 
-	pipelineRunStatusFromRedis := server.GetPipelineRunStatus(jsonKey)
+	pipelineRunStatusFromRedis := server.GetPipelineRunStatus(jsonKey, redisJSONHandler)
 
 	pipelineRunStatusFromRedis.Status = pipelineRunLabels["status"]
 
