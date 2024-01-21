@@ -62,11 +62,26 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
 	// sthingsCli.AddValueToRedisSet(redisClient, prInformation["stagetime/date"]+"-"+prInformation["stagetime/commit"]+"-"+prInformation["stagetime/stage"], prInformation["name"])
 
-	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
-	fmt.Println(stageStatus)
+	// PIPELINERUN STATUS
+	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
+	fmt.Println(pipelineRunStatus)
+
+	pipelineRunStatusFromRedis := server.PipelineRunStatus{}
+	err := json.Unmarshal(pipelineRunStatus, &pipelineRunStatusFromRedis)
+	if err != nil {
+		log.Fatalf("FAILED TO JSON UNMARSHAL")
+	}
+
+	pipelineRunStatusFromRedis.Status = "TESTED"
+
+	server.PrintTable(pipelineRunStatusFromRedis)
+
+	// STAGE STATUS
+	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+pipelineRunLabels["stagetime/stage"])
+	fmt.Println(pipelineRunStatus)
 
 	stageStatusFromRedis := server.StageStatus{}
-	err := json.Unmarshal(stageStatus, &stageStatusFromRedis)
+	err = json.Unmarshal(stageStatus, &stageStatusFromRedis)
 	if err != nil {
 		log.Fatalf("FAILED TO JSON UNMARSHAL")
 	}
