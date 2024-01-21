@@ -113,7 +113,6 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 func GetPipelineRunStatus(jsonKey string) (pipelineRunStatus server.PipelineRunStatus) {
 
 	pipelineRunStatus = server.PipelineRunStatus{}
-	redisJSONHandler.SetGoRedisClient(redisClient)
 
 	// PIPELINERUN STATUS
 	pipelineRunStatusFromRedis := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
