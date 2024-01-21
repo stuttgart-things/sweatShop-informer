@@ -50,6 +50,7 @@ func produceStatus(key, value string) {
 func checkStageStatus(pipelineRunLabels map[string]string) {
 
 	fmt.Println("LABLES", pipelineRunLabels)
+	fmt.Println(pipelineRunLabels["name"] + "-status")
 
 	redisJSONHandler.SetGoRedisClient(redisClient)
 
