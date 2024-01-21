@@ -25,6 +25,8 @@ var (
 
 func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 
+	redisJSONHandler.SetGoRedisClient(redisClient)
+
 	// PIPELINERUN STATUS
 	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
 
