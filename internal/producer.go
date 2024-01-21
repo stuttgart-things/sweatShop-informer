@@ -49,6 +49,8 @@ func produceStatus(key, value string) {
 
 func checkStageStatus(pipelineRunLabels map[string]string) {
 
+	fmt.Println("LABLES", pipelineRunLabels)
+
 	redisJSONHandler.SetGoRedisClient(redisClient)
 
 	fmt.Println(pipelineRunLabels)
@@ -65,7 +67,7 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 	stageStatusFromRedis := server.StageStatus{}
 	err := json.Unmarshal(stageStatus, &stageStatusFromRedis)
 	if err != nil {
-		log.Fatalf("Failed to JSON Unmarshal")
+		log.Fatalf("FAILED TO JSON UNMARSHAL")
 	}
 
 	stageStatusFromRedis.Status = "TESTED"
