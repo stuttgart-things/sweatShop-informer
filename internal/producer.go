@@ -110,21 +110,22 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 
 // │ map[stagetime/author:patrick-hermann-sva stagetime/commit:3c5ac44c6fec00989c7e27b36630a82cdfd26e3b0 stagetime/repo:stuttgart-things stagetime/stage:0 tekton.dev/pipeline:st-0-simu │
 
-func GetPipelineRunStatus(jsonKey string) (pipelineRunStatus server.PipelineRunStatus) {
+func GetPipelineRunStatus(jsonKey string) server.PipelineRunStatus {
 
 	redisClient := goredis.NewClient(&goredis.Options{Addr: redisUrl, Password: redisPassword, DB: 0})
 	redisJSONHandler.SetGoRedisClient(redisClient)
 
-	pipelineRunStatus = server.PipelineRunStatus{}
-
 	// PIPELINERUN STATUS
-	pipelineRunStatusFromRedis := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
+	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
 
-	err := json.Unmarshal(pipelineRunStatusFromRedis, &pipelineRunStatusFromRedis)
+	pipelineRunStatusFromRedis := server.PipelineRunStatus{}
+
+	err := json.Unmarshal(pipelineRunStatus, &pipelineRunStatusFromRedis)
 	if err != nil {
 		log.Fatalf("FAILED TO JSON UNMARSHAL")
-		fmt.Println(err)
 	}
 
-	return
+	fmt.Println(pipelineRunStatusFromRedis)
+
+	return pipelineRunStatusFromRedis
 }
