@@ -120,6 +120,7 @@ func GetPipelineRunStatus(jsonKey string) (pipelineRunStatus server.PipelineRunS
 	err := json.Unmarshal(pipelineRunStatusFromRedis, &pipelineRunStatusFromRedis)
 	if err != nil {
 		log.Fatalf("FAILED TO JSON UNMARSHAL")
+		fmt.Println(err)
 	}
 
 	return
