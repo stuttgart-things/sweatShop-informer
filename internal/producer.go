@@ -112,8 +112,8 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 
 func GetPipelineRunStatus(jsonKey string) server.PipelineRunStatus {
 
-	redisClient := goredis.NewClient(&goredis.Options{Addr: redisUrl, Password: redisPassword, DB: 0})
-	redisJSONHandler.SetGoRedisClient(redisClient)
+	// redisClient := goredis.NewClient(&goredis.Options{Addr: redisUrl, Password: redisPassword, DB: 0})
+	// redisJSONHandler.SetGoRedisClient(redisClient)
 
 	// PIPELINERUN STATUS
 	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
