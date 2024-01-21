@@ -59,6 +59,9 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 		log.Fatalf("FAILED TO JSON UNMARSHAL")
 	}
 
+	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
+	fmt.Println("STAGGE", stagePipelineRuns)
+
 	stageStatusFromRedis.Status = pipelineRunLabels["status"]
 
 	server.PrintTable(stageStatusFromRedis)
