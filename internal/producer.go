@@ -29,13 +29,15 @@ func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 	redisJSONHandler.SetGoRedisClient(redisClient)
 
 	// PIPELINERUN STATUS
-	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
+	// pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
 
-	pipelineRunStatusFromRedis := server.PipelineRunStatus{}
-	err := json.Unmarshal(pipelineRunStatus, &pipelineRunStatusFromRedis)
-	if err != nil {
-		log.Fatalf("FAILED TO JSON UNMARSHAL")
-	}
+	// pipelineRunStatusFromRedis := server.PipelineRunStatus{}
+	// err := json.Unmarshal(pipelineRunStatus, &pipelineRunStatusFromRedis)
+	// if err != nil {
+	// 	log.Fatalf("FAILED TO JSON UNMARSHAL")
+	// }
+
+	pipelineRunStatusFromRedis := GetPipelineRunStatus(jsonKey)
 
 	pipelineRunStatusFromRedis.Status = pipelineRunLabels["status"]
 
@@ -107,3 +109,19 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 // log.Info("ALL PIPELEINRUNS OF THIS STAGE: ", pipelineRuns)
 
 // │ map[stagetime/author:patrick-hermann-sva stagetime/commit:3c5ac44c6fec00989c7e27b36630a82cdfd26e3b0 stagetime/repo:stuttgart-things stagetime/stage:0 tekton.dev/pipeline:st-0-simu │
+
+func GetPipelineRunStatus(jsonKey string) (pipelineRunStatus server.PipelineRunStatus) {
+
+	pipelineRunStatus = server.PipelineRunStatus{}
+	redisJSONHandler.SetGoRedisClient(redisClient)
+
+	// PIPELINERUN STATUS
+	pipelineRunStatusFromRedis := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
+
+	err := json.Unmarshal(pipelineRunStatusFromRedis, &pipelineRunStatusFromRedis)
+	if err != nil {
+		log.Fatalf("FAILED TO JSON UNMARSHAL")
+	}
+
+	return
+}
