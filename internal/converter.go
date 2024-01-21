@@ -71,6 +71,6 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		pipelineRunLabels["annotation"] = annotation
 
 		setPipelineRunStatus(pipelineRunLabels)
-		checkStageStatus(pipelineRunLabels)
+		setStageStatus(pipelineRunLabels)
 	}
 }
