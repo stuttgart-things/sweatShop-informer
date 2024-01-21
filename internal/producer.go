@@ -14,8 +14,6 @@ import (
 
 	goredis "github.com/redis/go-redis/v9"
 	sthingsCli "github.com/stuttgart-things/sthingsCli"
-
-	"context"
 )
 
 var (
@@ -25,25 +23,22 @@ var (
 	redisJSONHandler = rejson.NewReJSONHandler()
 )
 
-func produceStatus(key, value string) {
+func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 
-	ctx := context.TODO()
-	rc := goredis.NewClient(&goredis.Options{
-		Addr:     redisUrl,
-		Password: redisPassword, // no password set
-		DB:       0,             // use default DB
-	})
+	// PIPELINERUN STATUS
+	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
 
-	rc.Set(ctx, "language", "Go", 1000000)
-
-	err := rc.Set(ctx, key, value, 0).Err()
+	pipelineRunStatusFromRedis := server.PipelineRunStatus{}
+	err := json.Unmarshal(pipelineRunStatus, &pipelineRunStatusFromRedis)
 	if err != nil {
-		panic(err)
+		log.Fatalf("FAILED TO JSON UNMARSHAL")
 	}
 
-	rc.Close()
+	pipelineRunStatusFromRedis.Status = pipelineRunLabels["status"]
 
-	log.Println("STATUS WRITTEN TO: "+redisUrl, key+": "+value)
+	server.PrintTable(pipelineRunStatusFromRedis)
+
+	sthingsCli.SetRedisJSON(redisJSONHandler, pipelineRunStatusFromRedis, pipelineRunLabels["name"]+"-status")
 
 }
 
@@ -62,26 +57,11 @@ func checkStageStatus(pipelineRunLabels map[string]string) {
 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
 	// sthingsCli.AddValueToRedisSet(redisClient, prInformation["stagetime/date"]+"-"+prInformation["stagetime/commit"]+"-"+prInformation["stagetime/stage"], prInformation["name"])
 
-	// PIPELINERUN STATUS
-	pipelineRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["name"]+"-status")
-	fmt.Println(pipelineRunStatus)
-
-	pipelineRunStatusFromRedis := server.PipelineRunStatus{}
-	err := json.Unmarshal(pipelineRunStatus, &pipelineRunStatusFromRedis)
-	if err != nil {
-		log.Fatalf("FAILED TO JSON UNMARSHAL")
-	}
-
-	pipelineRunStatusFromRedis.Status = "TESTED"
-
-	server.PrintTable(pipelineRunStatusFromRedis)
-
 	// STAGE STATUS
 	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+pipelineRunLabels["stagetime/stage"])
-	fmt.Println(pipelineRunStatus)
 
 	stageStatusFromRedis := server.StageStatus{}
-	err = json.Unmarshal(stageStatus, &stageStatusFromRedis)
+	err := json.Unmarshal(stageStatus, &stageStatusFromRedis)
 	if err != nil {
 		log.Fatalf("FAILED TO JSON UNMARSHAL")
 	}
