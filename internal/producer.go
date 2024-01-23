@@ -5,6 +5,7 @@ Copyright © 2023 PATRICK HERMANN patrick.hermann@sva.de
 package internal
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/nitishm/go-rejson/v4"
@@ -46,6 +47,9 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 	stageStatusFromRedis.Status = pipelineRunLabels["status"]
 
 	server.PrintTable(stageStatusFromRedis)
+
+	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
+	fmt.Println("STAGGE", stagePipelineRuns)
 
 	// sthingsCli.SetRedisJSON(redisJSONHandler, stageStatusFromRedis, jsonKey)
 
