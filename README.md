@@ -5,7 +5,7 @@ informs dynamic of stageTime resource status
 ## DEV-TASKS
 
 ```bash
-task --list: Available tasks for this project:
+task --list: Available tasks for this project
 * build:               Build the app
 * build-image:         Build image
 * git-push:            Commit & push the module
