@@ -10,6 +10,7 @@ import (
 
 	"github.com/nitishm/go-rejson/v4"
 	server "github.com/stuttgart-things/stageTime-server/server"
+	sthingsBase "github.com/stuttgart-things/sthingsBase"
 
 	goredis "github.com/redis/go-redis/v9"
 	sthingsCli "github.com/stuttgart-things/sthingsCli"
@@ -58,8 +59,12 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 		pipelineRunStatusFromRedis := server.GetPipelineRunStatus(name+"-status", redisJSONHandler)
 		prStatus = append(prStatus, fmt.Sprintln(pipelineRunStatusFromRedis))
 	}
-
 	fmt.Println("STTTAUUS", prStatus)
+
+	if !sthingsBase.CheckForStringInSlice(prStatus, "STOP") {
+		fmt.Println("STAGE IS DEAD")
+	}
+
 	// sthingsCli.SetRedisJSON(redisJSONHandler, stageStatusFromRedis, jsonKey)
 
 }
