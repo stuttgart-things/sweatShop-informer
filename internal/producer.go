@@ -51,12 +51,15 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
 	fmt.Println("ALL PRS: ", stagePipelineRuns)
 
+	var prStatus []string
+
 	for _, name := range stagePipelineRuns {
 		fmt.Println(name)
 		pipelineRunStatusFromRedis := server.GetPipelineRunStatus(name+"-status", redisJSONHandler)
-		fmt.Println(pipelineRunStatusFromRedis)
+		prStatus = append(prStatus, fmt.Sprintln(pipelineRunStatusFromRedis))
 	}
 
+	fmt.Println("STTTAUUS", prStatus)
 	// sthingsCli.SetRedisJSON(redisJSONHandler, stageStatusFromRedis, jsonKey)
 
 }
