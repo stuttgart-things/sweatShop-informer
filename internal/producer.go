@@ -29,7 +29,7 @@ func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 
 	pipelineRunStatusFromRedis := server.GetPipelineRunStatus(jsonKey, redisJSONHandler)
 
-	pipelineRunStatusFromRedis.Status = pipelineRunLabels["status"]
+	pipelineRunStatusFromRedis.Status = pipelineRunLabels["annotation"]
 
 	server.PrintTable(pipelineRunStatusFromRedis)
 
