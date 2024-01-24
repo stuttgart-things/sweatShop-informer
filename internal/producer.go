@@ -67,31 +67,6 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 }
 
-// func setStageStatus(pipelineRunLabels map[string]string) {
-
-// 	jsonKey := pipelineRunLabels["stagetime/commit"] + pipelineRunLabels["stagetime/stage"]
-// 	redisJSONHandler.SetGoRedisClient(redisClient)
-
-// 	// STAGE STATUS
-// 	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
-
-// 	stageStatusFromRedis := server.StageStatus{}
-// 	err := json.Unmarshal(stageStatus, &stageStatusFromRedis)
-// 	if err != nil {
-// 		log.Fatalf("FAILED TO JSON UNMARSHAL")
-// 	}
-
-// 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
-// 	fmt.Println("STAGGE", stagePipelineRuns)
-
-// 	stageStatusFromRedis.Status = pipelineRunLabels["status"]
-
-// 	server.PrintTable(stageStatusFromRedis)
-
-// 	sthingsCli.SetRedisJSON(redisJSONHandler, stageStatusFromRedis, jsonKey)
-
-// }
-
 // func checkStageStatus(pipelineRunLabels map[string]string) {
 
 // 	fmt.Println("LABLES", pipelineRunLabels)
