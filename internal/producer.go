@@ -61,11 +61,9 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 	}
 	fmt.Println("STTTAUUS", prStatus)
 
-	if !sthingsBase.CheckForStringInSlice(prStatus, "STOP") {
-		fmt.Println("STAGE IS DEAD")
+	if sthingsBase.CheckForStringInSlice(prStatus, "STOP") {
+		fmt.Println("STAGE IS DEAD", jsonKey)
 	}
-
-	// sthingsCli.SetRedisJSON(redisJSONHandler, stageStatusFromRedis, jsonKey)
 
 }
 

@@ -44,8 +44,10 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		pipelineRunLabels["status"] = pipelineRunStatusMessage
 
 		pipelineRunAnnotations := pipelineRun.Annotations
+
 		if pipelineRunAnnotations["canfail"] == "false" && pipelineRunStatusMessage == "FAILED" {
 			annotation = "STOP"
+			fmt.Println(pipelineRunLabels["name"] + " can fail: " + pipelineRunAnnotations["canfail"] + "and annotation is: " + annotation)
 		}
 		pipelineRunLabels["annotation"] = annotation
 
