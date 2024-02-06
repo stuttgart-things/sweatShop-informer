@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/nitishm/go-rejson/v4"
 	server "github.com/stuttgart-things/stageTime-server/server"
@@ -88,8 +89,14 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 		if revisionRunFromRedis.CountStages > countCurrentStage {
 			fmt.Println("NEXT STAGE LETS GOOO")
+
+			currentStageID := stageStatusFromRedis.StageID
+			nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
+			nextStageID := stageStatusFromRedis.StageID[:nextStageIDBuilder] + "-" + sthingsBase.ConvertIntegerToString(countCurrentStage+1)
+			fmt.Println("NEXT STAGE!?", nextStageID)
+			// server.SendStageToMessageQueue()
 		} else {
-			fmt.Println("REVISION RUN FINISHED")
+			fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])
 		}
 
 	}
