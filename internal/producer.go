@@ -73,11 +73,16 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 		revisionRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status")
 		revisionRunFromRedis := server.RevisionRunStatus{}
+
 		err := json.Unmarshal(revisionRunStatus, &revisionRunFromRedis)
 		if err != nil {
 			log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
 		}
 		server.PrintTable(revisionRunFromRedis)
+
+		fmt.Println("CURRENT STAGE:", pipelineRunLabels["stagetime/stage"])
+		fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
+
 	}
 
 	// func SendStageToMessageQueue(stageID string) {
