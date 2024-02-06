@@ -78,6 +78,7 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 		if err != nil {
 			log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
 		}
+
 		server.PrintTable(revisionRunFromRedis)
 
 		countCurrentStage := sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
