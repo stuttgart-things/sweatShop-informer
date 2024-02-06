@@ -5,6 +5,7 @@ Copyright © 2023 PATRICK HERMANN patrick.hermann@sva.de
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -60,14 +61,24 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 		fmt.Println("STAGE IS DEAD", jsonKey)
 	}
 
+	// PRINT ALL PRS FROM STAGE
+	fmt.Println("ALL PRS: ", stagePipelineRuns)
+
 	// SET STAGE STATUS
 	stageStatusFromRedis.Status = pipelineRunLabels["status"]
-
-	fmt.Println("STAGE STATUS: ", pipelineRunLabels["status"])
 	// PRINT UPDATED STAGE STATUS
 	server.PrintTable(stageStatusFromRedis)
 
-	fmt.Println("ALL PRS: ", stagePipelineRuns)
+	if pipelineRunLabels["status"] == "SUCCEEDED" {
+
+		revisionRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status")
+		revisionRunFromRedis := server.RevisionRunStatus{}
+		err := json.Unmarshal(revisionRunStatus, &revisionRunFromRedis)
+		if err != nil {
+			log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
+		}
+		server.PrintTable(revisionRunFromRedis)
+	}
 
 	// func SendStageToMessageQueue(stageID string) {
 
