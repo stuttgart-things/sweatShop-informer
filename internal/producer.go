@@ -40,81 +40,44 @@ func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 
 func setStageStatus(pipelineRunLabels map[string]string) {
 
+	var prStatus []string
 	jsonKey := pipelineRunLabels["stagetime/commit"] + pipelineRunLabels["stagetime/stage"]
 	redisJSONHandler.SetGoRedisClient(redisClient)
 
+	// GET CURRENT STAGE STATUS
 	stageStatusFromRedis := server.GetStageStatus(jsonKey, redisJSONHandler)
-
-	stageStatusFromRedis.Status = pipelineRunLabels["status"]
-
-	server.PrintTable(stageStatusFromRedis)
-
 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
-	fmt.Println("ALL PRS: ", stagePipelineRuns)
 
-	var prStatus []string
-
+	// GET CURRENT PIPELINERUN STATUS
 	for _, name := range stagePipelineRuns {
-		fmt.Println(name)
+		// fmt.Println(name)
 		pipelineRunStatusFromRedis := server.GetPipelineRunStatus(name+"-status", redisJSONHandler)
 		prStatus = append(prStatus, fmt.Sprintln(pipelineRunStatusFromRedis))
 	}
-	fmt.Println("STTTAUUS", prStatus)
 
+	// CHECK IF STAGE IS SUCCESSFULL, FAILED OR STILL RUNNING
 	if sthingsBase.CheckForStringInSlice(prStatus, "STOP") {
 		fmt.Println("STAGE IS DEAD", jsonKey)
 	}
 
+	// SET STAGE STATUS
+	stageStatusFromRedis.Status = pipelineRunLabels["status"]
+
+	fmt.Println("STAGE STATUS: ", pipelineRunLabels["status"])
+	// PRINT UPDATED STAGE STATUS
+	server.PrintTable(stageStatusFromRedis)
+
+	fmt.Println("ALL PRS: ", stagePipelineRuns)
+
+	// func SendStageToMessageQueue(stageID string) {
+
+	// 	streamValues := map[string]interface{}{
+	// 		"stage": stageID,
+	// 	}
+
+	// 	sthingsCli.EnqueueDataInRedisStreams(redisAddress+":"+redisPort, redisPassword, redisStream, streamValues)
+	// 	fmt.Println("STREAM", redisStream)
+	// 	fmt.Println("VALUES", streamValues)
+	// }
+
 }
-
-// func checkStageStatus(pipelineRunLabels map[string]string) {
-
-// 	fmt.Println("LABLES", pipelineRunLabels)
-// 	fmt.Println(pipelineRunLabels["name"] + "-status")
-
-// 	redisJSONHandler.SetGoRedisClient(redisClient)
-
-// 	fmt.Println(pipelineRunLabels)
-// 	stageKey := pipelineRunLabels["stagetime/date"] + "-" + pipelineRunLabels["stagetime/commit"] + "-" + pipelineRunLabels["stagetime/stage"]
-
-// 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageKey)
-
-// 	fmt.Println("ALL PIPELEINRUNS OF THIS STAGE: ", stagePipelineRuns)
-// 	// sthingsCli.AddValueToRedisSet(redisClient, prInformation["stagetime/date"]+"-"+prInformation["stagetime/commit"]+"-"+prInformation["stagetime/stage"], prInformation["name"])
-
-// 	// STAGE STATUS
-// 	stageStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+pipelineRunLabels["stagetime/stage"])
-
-// 	stageStatusFromRedis := server.StageStatus{}
-// 	err := json.Unmarshal(stageStatus, &stageStatusFromRedis)
-// 	if err != nil {
-// 		log.Fatalf("FAILED TO JSON UNMARSHAL")
-// 	}
-
-// 	stageStatusFromRedis.Status = "TESTED"
-
-// 	server.PrintTable(stageStatusFromRedis)
-
-// 	// IF STOP FOUND MARK REVISIONRUN AS FAILED
-// 	// IF ALL CONTINUE MARK STAGE AS SUCCESSFULL
-
-// }
-
-// pipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
-// log.Info("ALL PIPELEINRUNS OF THIS STAGE: ", pipelineRuns)
-
-// │ map[stagetime/author:patrick-hermann-sva stagetime/commit:3c5ac44c6fec00989c7e27b36630a82cdfd26e3b0 stagetime/repo:stuttgart-things stagetime/stage:0 tekton.dev/pipeline:st-0-simu │
-
-// func GetPipelineRunStatus(jsonKey string) server.PipelineRunStatus {
-
-// 	pipelineRunStatusJson := sthingsCli.GetRedisJSON(redisJSONHandler, jsonKey)
-// 	pipelineRunStatus := server.PipelineRunStatus{}
-
-// 	err := json.Unmarshal(pipelineRunStatusJson, &pipelineRunStatus)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		log.Fatalf("FAILED TO JSON UNMARSHAL")
-// 	}
-
-// 	return pipelineRunStatus
-// }
