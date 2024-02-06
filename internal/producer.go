@@ -94,7 +94,8 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 			nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
 			nextStageID := stageStatusFromRedis.StageID[:nextStageIDBuilder] + "-" + sthingsBase.ConvertIntegerToString(countCurrentStage+1)
 			fmt.Println("NEXT STAGE!?", nextStageID)
-			// server.SendStageToMessageQueue()
+			server.SendStageToMessageQueue(nextStageID)
+
 		} else {
 			fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])
 		}
