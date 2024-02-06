@@ -80,8 +80,17 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 		}
 		server.PrintTable(revisionRunFromRedis)
 
-		fmt.Println("CURRENT STAGE:", pipelineRunLabels["stagetime/stage"])
-		fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
+		countCurrentStage := sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
+		countAllStages := sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
+
+		fmt.Println("CURRENT STAGE:", countCurrentStage)
+		fmt.Println("COUNT STAGES:", countAllStages)
+
+		if countCurrentStage > countAllStages {
+			fmt.Println("NEXT STAGE LETS GOOO")
+		} else {
+			fmt.Println("REVISION RUN FINISHED")
+		}
 
 	}
 
