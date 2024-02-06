@@ -92,7 +92,9 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 			currentStageID := stageStatusFromRedis.StageID
 			nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
-			nextStageID := stageStatusFromRedis.StageID[:nextStageIDBuilder] + "-" + sthingsBase.ConvertIntegerToString(countCurrentStage+1)
+
+			nextStageID := replaceLastOccurrenceInSubstring(stageStatusFromRedis.StageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(countCurrentStage+1), "-", "+")
+
 			fmt.Println("NEXT STAGE!?", nextStageID)
 			server.SendStageToMessageQueue(nextStageID)
 
@@ -113,4 +115,12 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 	// 	fmt.Println("VALUES", streamValues)
 	// }
 
+}
+
+func replaceLastOccurrenceInSubstring(subString, searchFor, replaceWith string) (x2 string) {
+	i := strings.LastIndex(subString, searchFor)
+	if i == -1 {
+		return subString
+	}
+	return subString[:i] + replaceWith + subString[i+len(searchFor):]
 }
