@@ -23,6 +23,7 @@ var (
 	redisPassword    = os.Getenv("REDIS_PASSWORD")
 	redisClient      = goredis.NewClient(&goredis.Options{Addr: redisUrl, Password: redisPassword, DB: 0})
 	redisJSONHandler = rejson.NewReJSONHandler()
+	redisStream      = os.Getenv("REDIS_STREAM")
 )
 
 func setPipelineRunStatus(pipelineRunLabels map[string]string) {
@@ -96,7 +97,7 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 			nextStageID := replaceLastOccurrenceInSubstring(stageStatusFromRedis.StageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(countCurrentStage+1), "-", "+")
 
 			fmt.Println("NEXT STAGE!?", nextStageID)
-			server.SendStageToMessageQueue(nextStageID)
+			SendStageToMessageQueue(nextStageID)
 
 		} else {
 			fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])
@@ -104,17 +105,17 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 	}
 
-	// func SendStageToMessageQueue(stageID string) {
+}
 
-	// 	streamValues := map[string]interface{}{
-	// 		"stage": stageID,
-	// 	}
+func SendStageToMessageQueue(stageID string) {
 
-	// 	sthingsCli.EnqueueDataInRedisStreams(redisAddress+":"+redisPort, redisPassword, redisStream, streamValues)
-	// 	fmt.Println("STREAM", redisStream)
-	// 	fmt.Println("VALUES", streamValues)
-	// }
+	streamValues := map[string]interface{}{
+		"stage": stageID,
+	}
 
+	sthingsCli.EnqueueDataInRedisStreams(redisUrl, redisPassword, redisStream, streamValues)
+	fmt.Println("STREAM", redisStream)
+	fmt.Println("VALUES", streamValues)
 }
 
 func replaceLastOccurrenceInSubstring(subString, searchFor, replaceWith string) (x2 string) {

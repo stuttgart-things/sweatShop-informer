@@ -5,6 +5,7 @@ configmaps:
   informer:
     INFORMING_NAMESPACE: tektoncd
     INFORMING_KINDS: pipelineruns
+    REDIS_STREAM: stagetime-revisionruns
 
 secrets:
   redis-connection:
