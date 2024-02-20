@@ -26,7 +26,7 @@ var (
 	redisStream      = os.Getenv("REDIS_STREAM")
 )
 
-func setPipelineRunStatus(pipelineRunLabels map[string]string) {
+func getPipelineRunStatus(pipelineRunLabels map[string]string) {
 
 	jsonKey := pipelineRunLabels["name"] + "-status"
 	redisJSONHandler.SetGoRedisClient(redisClient)
@@ -39,6 +39,26 @@ func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 
 	sthingsCli.SetRedisJSON(redisJSONHandler, pipelineRunStatusFromRedis, jsonKey)
 
+}
+
+func setPipelineRunStatus(pipelineRunLabels map[string]string) {
+
+	jsonKey := pipelineRunLabels["name"] + "-status"
+	redisJSONHandler.SetGoRedisClient(redisClient)
+
+	pipelineRunStatusFromRedis := server.GetPipelineRunStatus(jsonKey, redisJSONHandler)
+
+	server.PrintTable(pipelineRunStatusFromRedis)
+
+	// ONLY SET STATUS IF NO PREVIOUS STATUS WAS SET TO THE PIPELINERUN
+	if !strings.Contains(pipelineRunStatusFromRedis.Status, "STOP") || !strings.Contains(pipelineRunStatusFromRedis.Status, "CONTINUE") {
+
+		pipelineRunStatusFromRedis.Status = pipelineRunLabels["annotation"]
+
+		server.PrintTable(pipelineRunStatusFromRedis)
+
+		sthingsCli.SetRedisJSON(redisJSONHandler, pipelineRunStatusFromRedis, jsonKey)
+	}
 }
 
 func setStageStatus(pipelineRunLabels map[string]string) {
@@ -68,20 +88,26 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 	// SET STAGE STATUS
 	stageStatusFromRedis.Status = pipelineRunLabels["status"]
+
 	// PRINT UPDATED STAGE STATUS
 	server.PrintTable(stageStatusFromRedis)
 
+	// GET REVISIONRUN STATUS
+	revisionRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status")
+	revisionRunFromRedis := server.RevisionRunStatus{}
+
+	err := json.Unmarshal(revisionRunStatus, &revisionRunFromRedis)
+	if err != nil {
+		log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
+	}
+
+	server.PrintTable(revisionRunFromRedis)
+
 	if pipelineRunLabels["status"] == "SUCCEEDED" {
 
-		revisionRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status")
-		revisionRunFromRedis := server.RevisionRunStatus{}
-
-		err := json.Unmarshal(revisionRunStatus, &revisionRunFromRedis)
-		if err != nil {
-			log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
-		}
-
-		server.PrintTable(revisionRunFromRedis)
+		// CALL SERVER GET REVISIONRUN STATUS
+		// IF STATUS NOT ALREADY SET BY INFORMER
+		// SET STATUS BY INFORMER
 
 		countCurrentStage := sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
 
@@ -101,6 +127,7 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 
 		} else {
 			fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])
+			server.SetRevisionRunStatusInRedis(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status", "REVISIONRUN SUCCESSFUL", revisionRunFromRedis, true)
 		}
 
 	}

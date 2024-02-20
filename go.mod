@@ -8,7 +8,7 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/nitishm/go-rejson/v4 v4.1.1-0.20230331060235-d2aa875760e4
 	github.com/redis/go-redis/v9 v9.0.5
-	github.com/stuttgart-things/stageTime-server v0.4.30
+	github.com/stuttgart-things/stageTime-server v0.4.49
 	github.com/stuttgart-things/sthingsBase v0.1.33
 	github.com/stuttgart-things/sthingsCli v0.1.82
 	github.com/stuttgart-things/sthingsK8s v0.1.19
