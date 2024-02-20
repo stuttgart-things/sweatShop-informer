@@ -114,7 +114,7 @@ func setStageStatus(pipelineRunLabels map[string]string) {
 		fmt.Println("CURRENT STAGE:", countCurrentStage)
 		fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
 
-		if revisionRunFromRedis.CountStages > countCurrentStage {
+		if revisionRunFromRedis.CountStages > (countCurrentStage - 1) {
 			fmt.Println("NEXT STAGE LETS GOOO")
 
 			currentStageID := stageStatusFromRedis.StageID
