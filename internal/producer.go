@@ -158,19 +158,19 @@ func checkForNextStage(stageID, revisionRunID string, nextStage int) bool {
 // 	fmt.Println("CURRENT STAGE:", countCurrentStage)
 // 	fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
 
-// 	if revisionRunFromRedis.CountStages > countCurrentStage {
+// if revisionRunFromRedis.CountStages > countCurrentStage {
 
-// 		if pipelineRunLabels["status"] != "SUCCEEDED" {
+// 	if pipelineRunLabels["status"] != "SUCCEEDED" {
 
-// 		fmt.Println("NEXT STAGE LETS GOOO")
+// 	fmt.Println("NEXT STAGE LETS GOOO")
 
-// 		currentStageID := stageStatusFromRedis.StageID
-// 		nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
+// 	currentStageID := stageStatusFromRedis.StageID
+// 	nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
 
-// 		nextStageID := replaceLastOccurrenceInSubstring(stageStatusFromRedis.StageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(countCurrentStage+1), "-", "+")
+// 	nextStageID := replaceLastOccurrenceInSubstring(stageStatusFromRedis.StageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(countCurrentStage+1), "-", "+")
 
-// 		fmt.Println("NEXT STAGE!?", nextStageID)
-// 		SendStageToMessageQueue(nextStageID)
+// 	fmt.Println("NEXT STAGE!?", nextStageID)
+// 	SendStageToMessageQueue(nextStageID)
 
 // 	} else {
 // 		fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])

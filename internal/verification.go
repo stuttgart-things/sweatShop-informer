@@ -6,6 +6,7 @@ package internal
 
 import (
 	"fmt"
+	"strings"
 
 	sthingsBase "github.com/stuttgart-things/sthingsBase"
 )
@@ -64,6 +65,13 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 			// NO NEW STAGE AND CONTINUE = REVISION RUN WAS SUCCESFUL
 			if !nextStage {
 				setRevisionRunStatus(pipelineRunLabels["stagetime/commit"], stageID, true)
+			} else {
+				nextStageIDBuilder := strings.LastIndex(stageID, "-")
+
+				nextStageID := replaceLastOccurrenceInSubstring(stageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(currentStageNumber+1), "-", "+")
+
+				fmt.Println("NEXT STAGE!?", nextStageID)
+				SendStageToMessageQueue(nextStageID)
 			}
 		}
 
