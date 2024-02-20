@@ -52,6 +52,25 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 		pipelineRunLabels["annotation"] = annotation
 
 		setPipelineRunStatus(pipelineRunLabels)
-		setStageStatus(pipelineRunLabels)
+		stageFinished, continueRun, stageID, currentStageNumber := setStageStatus(pipelineRunLabels)
+
+		// CHECK FOR NEW STAGE OR SUCCESFUL OR FAILED REVISIONRUN
+		if stageFinished && continueRun {
+
+			// CHECK FOR NEW STAGE
+			nextStage := checkForNextStage(stageID, pipelineRunLabels["stagetime/commit"], (currentStageNumber + 1))
+			fmt.Println(nextStage)
+
+			// NO NEW STAGE AND CONTINUE = REVISION RUN WAS SUCCESFUL
+			if !nextStage {
+				setRevisionRunStatus(pipelineRunLabels["stagetime/commit"], stageID, true)
+			}
+		}
+
+		// REVISIONRUN IS FAILED
+		if stageFinished && !continueRun {
+			setRevisionRunStatus(pipelineRunLabels["stagetime/commit"], stageID, false)
+		}
+
 	}
 }

@@ -5,7 +5,6 @@ Copyright © 2023 PATRICK HERMANN patrick.hermann@sva.de
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"strings"
@@ -61,78 +60,124 @@ func setPipelineRunStatus(pipelineRunLabels map[string]string) {
 	}
 }
 
-func setStageStatus(pipelineRunLabels map[string]string) {
+func setStageStatus(pipelineRunLabels map[string]string) (stageFinished, continueRun bool, stageID string, currentStageNumber int) {
 
+	// VARS DECLARATION
 	var prStatus []string
-	jsonKey := pipelineRunLabels["stagetime/commit"] + pipelineRunLabels["stagetime/stage"]
+	var stageStatus string
+	continueRun = true
+
+	stageID = pipelineRunLabels["stagetime/commit"] + pipelineRunLabels["stagetime/stage"]
 	redisJSONHandler.SetGoRedisClient(redisClient)
+	currentStageNumber = sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
 
 	// GET CURRENT STAGE STATUS
-	stageStatusFromRedis := server.GetStageStatus(jsonKey, redisJSONHandler)
+	stageStatusFromRedis := server.GetStageStatus(stageID, redisJSONHandler)
 	stagePipelineRuns := sthingsCli.GetValuesFromRedisSet(redisClient, stageStatusFromRedis.StageID)
 
-	// GET CURRENT PIPELINERUN STATUS
+	// CHECK STATUS OF ALL PRS OF STAGE
 	for _, name := range stagePipelineRuns {
-		// fmt.Println(name)
 		pipelineRunStatusFromRedis := server.GetPipelineRunStatus(name+"-status", redisJSONHandler)
 		prStatus = append(prStatus, fmt.Sprintln(pipelineRunStatusFromRedis))
 	}
 
 	// CHECK IF STAGE IS SUCCESSFULL, FAILED OR STILL RUNNING
 	if sthingsBase.CheckForStringInSlice(prStatus, "STOP") {
-		fmt.Println("STAGE IS DEAD", jsonKey)
+		stageStatus = "STAGE FAILED"
+		fmt.Println("STAGE FAILED", stageID)
+		stageFinished = true
+		continueRun = false
+
+	} else {
+		stageStatus = "SUCCESSFUL"
+		fmt.Println("STAGE SUCCEEDED", stageID)
+		stageFinished = true
+		continueRun = true
 	}
 
-	// PRINT ALL PRS FROM STAGE
-	fmt.Println("ALL PRS: ", stagePipelineRuns)
+	server.SetStageStatusInRedis(redisJSONHandler, stageID+"-status", stageStatus, stageStatusFromRedis, true)
 
-	// SET STAGE STATUS
-	stageStatusFromRedis.Status = pipelineRunLabels["status"]
+	return
+}
 
-	// PRINT UPDATED STAGE STATUS
-	server.PrintTable(stageStatusFromRedis)
+func setRevisionRunStatus(revisionRunID, StageID string, succeeded bool) {
 
-	// GET REVISIONRUN STATUS
-	revisionRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status")
-	revisionRunFromRedis := server.RevisionRunStatus{}
+	var revisionRunStatus string
+	revisionRunFromRedis := server.GetRevisionRunFromRedis(redisJSONHandler, revisionRunID+"-status", true)
 
-	err := json.Unmarshal(revisionRunStatus, &revisionRunFromRedis)
-	if err != nil {
-		log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
+	if succeeded {
+		revisionRunStatus = "REVISIONRUN SUCCEEDED AT STAGE " + StageID
+	} else {
+		revisionRunStatus = "REVISIONRUN FAILED AT STAGE " + StageID
 	}
 
-	server.PrintTable(revisionRunFromRedis)
+	server.SetRevisionRunStatusInRedis(redisJSONHandler, revisionRunID+"-status", revisionRunStatus, revisionRunFromRedis, true)
 
-	if pipelineRunLabels["status"] == "SUCCEEDED" {
+}
 
-		// CALL SERVER GET REVISIONRUN STATUS
-		// IF STATUS NOT ALREADY SET BY INFORMER
-		// SET STATUS BY INFORMER
+func checkForNextStage(stageID, revisionRunID string, nextStage int) bool {
 
-		countCurrentStage := sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
+	revisionRunFromRedis := server.GetRevisionRunFromRedis(redisJSONHandler, revisionRunID+"-status", true)
 
-		fmt.Println("CURRENT STAGE:", countCurrentStage)
-		fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
+	fmt.Println("NEXT STAGE:", nextStage)
+	fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
 
-		if revisionRunFromRedis.CountStages > (countCurrentStage - 1) {
-			fmt.Println("NEXT STAGE LETS GOOO")
+	if nextStage > revisionRunFromRedis.CountStages {
+		fmt.Println("NEXT STAGE LETS GO")
+		return true
 
-			currentStageID := stageStatusFromRedis.StageID
-			nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
-
-			nextStageID := replaceLastOccurrenceInSubstring(stageStatusFromRedis.StageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(countCurrentStage+1), "-", "+")
-
-			fmt.Println("NEXT STAGE!?", nextStageID)
-			SendStageToMessageQueue(nextStageID)
-
-		} else {
-			fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])
-			server.SetRevisionRunStatusInRedis(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status", "REVISIONRUN SUCCESSFUL", revisionRunFromRedis, true)
-		}
+	} else {
+		fmt.Println("NO NEXT STAGE")
+		return false
 
 	}
 
 }
+
+// 	// SET STAGE STATUS
+// 	stageStatusFromRedis.Status = pipelineRunLabels["status"]
+// 	server.PrintTable(stageStatusFromRedis)
+
+// 	// GET REVISIONRUN STATUS
+// 	revisionRunStatus := sthingsCli.GetRedisJSON(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status")
+// 	revisionRunFromRedis := server.RevisionRunStatus{}
+
+// 	err := json.Unmarshal(revisionRunStatus, &revisionRunFromRedis)
+// 	if err != nil {
+// 		log.Fatalf("FAILED TO JSON UNMARSHAL REVISIONRUN STATUS")
+// 	}
+
+// 	server.PrintTable(revisionRunFromRedis)
+
+// 	// CALL SERVER GET REVISIONRUN STATUS
+// 	// IF STATUS NOT ALREADY SET BY INFORMER
+// 	// SET STATUS BY INFORMER
+
+// 	countCurrentStage := sthingsBase.ConvertStringToInteger(pipelineRunLabels["stagetime/stage"])
+
+// 	fmt.Println("CURRENT STAGE:", countCurrentStage)
+// 	fmt.Println("COUNT STAGES:", revisionRunFromRedis.CountStages)
+
+// 	if revisionRunFromRedis.CountStages > countCurrentStage {
+
+// 		if pipelineRunLabels["status"] != "SUCCEEDED" {
+
+// 		fmt.Println("NEXT STAGE LETS GOOO")
+
+// 		currentStageID := stageStatusFromRedis.StageID
+// 		nextStageIDBuilder := strings.LastIndex(currentStageID, "-")
+
+// 		nextStageID := replaceLastOccurrenceInSubstring(stageStatusFromRedis.StageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(countCurrentStage+1), "-", "+")
+
+// 		fmt.Println("NEXT STAGE!?", nextStageID)
+// 		SendStageToMessageQueue(nextStageID)
+
+// 	} else {
+// 		fmt.Println("REVISION RUN FINISHED", pipelineRunLabels["stagetime/stage"])
+// 		server.SetRevisionRunStatusInRedis(redisJSONHandler, pipelineRunLabels["stagetime/commit"]+"-status", "REVISIONRUN SUCCESSFUL", revisionRunFromRedis, true)
+// 	}
+
+// 	// }
 
 func SendStageToMessageQueue(stageID string) {
 
