@@ -67,11 +67,9 @@ func verifyInformerStatus(kind, function string, obj interface{}) {
 				setRevisionRunStatus(pipelineRunLabels["stagetime/commit"], stageID, true)
 			} else {
 				nextStageIDBuilder := strings.LastIndex(stageID, "-")
-
 				nextStageID := replaceLastOccurrenceInSubstring(stageID[:nextStageIDBuilder]+"+"+sthingsBase.ConvertIntegerToString(currentStageNumber+1), "-", "+")
-
 				fmt.Println("NEXT STAGE!?", nextStageID)
-				SendStageToMessageQueue(nextStageID)
+				// SendStageToMessageQueue(nextStageID)
 			}
 		}
 
